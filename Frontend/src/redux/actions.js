@@ -15,7 +15,8 @@ export const FETCH_HISTORY = "FETCH_HISTORY";
 export const UPDATE_CLIENT = "UPDATE_CLIENT";
 export const UPDATE_PURCHASE = "UPDATE_PURCHASE";
 
-const API_URL = "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_REACT_APP_API_URL + "/api";
+
 const config = (token) => ({ headers: { Authorization: `Bearer ${token}` } });
 const multipartConfig = (token) => ({
   headers: {
@@ -191,42 +192,47 @@ export const isBtnDisabled = (filterData) => async (dispatch) => {
 };
 
 export const clientsList = (bufferData) => async (dispatch) => {
-  dispatch({ type: CLIENTS_LIST, payload: bufferData })
+  dispatch({ type: CLIENTS_LIST, payload: bufferData });
 };
 
-export const fetchFilteredClients = (token, filterName, filterValue, page = 0) => async (dispatch) => {
-  if (!token) {
-    toast.error("Please log in to fetch clients", { style: errorToastStyle });
-    throw new Error("Missing token");
-  }
-  try {
-    const filterURL = filterName ? `${filterName}/${filterValue}` : "";
-    const res = await axios.get(`${API_URL}/clients/${page}/${filterURL}`, config(token));
-    const fixedClients = res.data.map((client) => ({
-      ...client,
-      items: (client.items || []).map((item) => ({
-        ...item,
-        price: parseInt(item.price, 10),
-        remaining_balance: parseInt(item.remaining_balance, 10),
-      })),
-    }));
-    await dispatch({ type: FETCH_FILTERED_CLIENTS, payload: fixedClients });
-    const itemIds = fixedClients.flatMap((client) =>
-      client.items.map((item) => item.id)
-    );
-    await Promise.all(itemIds.map((id) => dispatch(fetchHistory(token, id))));
-    return fixedClients;
-  } catch (error) {
-    const message =
-      error.response?.status === 404
-        ? "Clients endpoint not found"
-        : "Failed to fetch clients";
-    console.error("[actions] fetchClients error:", message);
-    toast.error(message, { style: errorToastStyle });
-    dispatch({ type: FETCH_CLIENTS, payload: [] });
-    throw error;
-  }
-};
+export const fetchFilteredClients =
+  (token, filterName, filterValue, page = 0) =>
+  async (dispatch) => {
+    if (!token) {
+      toast.error("Please log in to fetch clients", { style: errorToastStyle });
+      throw new Error("Missing token");
+    }
+    try {
+      const filterURL = filterName ? `${filterName}/${filterValue}` : "";
+      const res = await axios.get(
+        `${API_URL}/clients/${page}/${filterURL}`,
+        config(token)
+      );
+      const fixedClients = res.data.map((client) => ({
+        ...client,
+        items: (client.items || []).map((item) => ({
+          ...item,
+          price: parseInt(item.price, 10),
+          remaining_balance: parseInt(item.remaining_balance, 10),
+        })),
+      }));
+      await dispatch({ type: FETCH_FILTERED_CLIENTS, payload: fixedClients });
+      const itemIds = fixedClients.flatMap((client) =>
+        client.items.map((item) => item.id)
+      );
+      await Promise.all(itemIds.map((id) => dispatch(fetchHistory(token, id))));
+      return fixedClients;
+    } catch (error) {
+      const message =
+        error.response?.status === 404
+          ? "Clients endpoint not found"
+          : "Failed to fetch clients";
+      console.error("[actions] fetchClients error:", message);
+      toast.error(message, { style: errorToastStyle });
+      dispatch({ type: FETCH_CLIENTS, payload: [] });
+      throw error;
+    }
+  };
 
 export const updateClient =
   (token, clientId, clientData) => async (dispatch) => {
