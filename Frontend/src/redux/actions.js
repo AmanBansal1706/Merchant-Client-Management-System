@@ -6,6 +6,7 @@ export const FETCH_CLIENTS = "FETCH_CLIENTS";
 export const PAGINATION = "PAGINATION";
 export const FETCH_FILTERED_CLIENTS = "FETCH_FILTERED_CLIENTS";
 export const CLIENTS_LIST = "CLIENTS_LIST";
+export const IS_INITIAL_LOAD = "IS_INITIAL_LOAD";
 export const STORE_FILTER_DATA = "STORE_FILTER_DATA";
 export const IS_BTN_DISABLED = "IS_BTN_DISABLED";
 export const ADD_CLIENT = "ADD_CLIENT";
@@ -16,7 +17,6 @@ export const UPDATE_CLIENT = "UPDATE_CLIENT";
 export const UPDATE_PURCHASE = "UPDATE_PURCHASE";
 
 const API_URL = import.meta.env.VITE_REACT_APP_API_URL + "/api";
-
 const config = (token) => ({ headers: { Authorization: `Bearer ${token}` } });
 const multipartConfig = (token) => ({
   headers: {
@@ -174,6 +174,13 @@ export const pagination = (currPage) => async (dispatch) => {
   dispatch({
     type: PAGINATION,
     payload: currPage < 0 ? 0 : currPage,
+  });
+};
+
+export const isInitialLoad = (currPage) => async (dispatch) => {
+  dispatch({
+    type: IS_INITIAL_LOAD,
+    payload: currPage,
   });
 };
 

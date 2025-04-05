@@ -580,8 +580,8 @@ const AddClient = () => {
             .filter((item) => item.name.trim())
             .map((item) => ({
               item_name: item.name,
-              price: parseInt(item.price, 10), // Ensure integer
-              remaining_balance: parseInt(item.remaining_balance, 10), // Ensure integer
+              price: parseInt(item.price, 10),
+              remaining_balance: parseInt(item.remaining_balance, 10),
               images: item.image ? [item.image] : null,
               existingImages: item.existingImages || [],
               purchaseId: item.purchaseId || null,

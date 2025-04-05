@@ -11,6 +11,7 @@ import {
   clientsList,
   storeFilterData,
   isBtnDisabled,
+  isInitialLoad,
 } from "../redux/actions";
 import { getClientListData } from "../redux/selectors";
 import {
@@ -29,7 +30,7 @@ import {
 
 const PageWrapper = styled.div`
   max-width: 1600px;
-  margin: 10px 60px;
+  margin: 0px 60px;
   position: fixed;
   top: 0;
   left: 0;
@@ -47,6 +48,7 @@ const Heading = styled.h2`
   color: var(--accent);
   text-align: center;
   margin-bottom: 15px;
+  margin-top: 10px;
 `;
 
 const ClientListContainer = styled.div`
@@ -320,7 +322,7 @@ const MenuItem = styled.button`
 `;
 
 const AddClientLink = styled(Link)`
-  margin-left: 450px;
+  margin-left: 600px;
   padding: 5px;
   background: var(--accent);
   color: var(--ivory);
@@ -547,22 +549,6 @@ const GetDataButton = styled.button`
     background: var(--highlight);
   }
 `;
-const GetAllDataButton = styled.button`
-  padding: 8px 6px;
-  background: var(--accent);
-  color: var(--ivory);
-  border: none;
-  border-radius: 6px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  height: 36px;
-  width: 120px;
-  transition: background 0.2s ease;
-  &:hover {
-    background: var(--highlight);
-  }
-`;
 
 function showToast() {
   const toast = document.createElement("div");
@@ -615,6 +601,7 @@ const ClientList = () => {
   const page = useSelector((state) => state.currentPage);
   const filterDataStore = useSelector((state) => state.filterData);
   const isBtnDisabledData = useSelector((state) => state.btnDisabled);
+  const isLoaded = useSelector((state) => state.isInitialLoad);
 
   const handleFilterDataChange = (evt) => {
     const changedField = evt.target.name;
@@ -663,6 +650,13 @@ const ClientList = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (isLoaded) {
+      handleAllClientsData();
+      dispatch(isInitialLoad(false));
+    }
+  }, []);
 
   const handlePaginationPrev = async (evt) => {
     if (evt.target.name === "prevPage") {
@@ -941,7 +935,6 @@ const ClientList = () => {
   const cancelDelete = useCallback(() => {
     setDeleteModalOpen(null);
   }, []);
-
   const handleLogout = useCallback(() => {
     const div = document.createElement("div");
     div.style.cssText =
@@ -1059,9 +1052,6 @@ const ClientList = () => {
               </div>
             )}
             <GetDataButton onClick={handleFilter}>Get Data</GetDataButton>
-            <GetAllDataButton onClick={handleAllClientsData}>
-              Get All Data
-            </GetAllDataButton>
           </FilterContainer>
           <AddClientLink to="/add-client">Add Client</AddClientLink>
           <LogoutButton onClick={handleLogout}>
@@ -1126,7 +1116,6 @@ const ClientList = () => {
           <DataContainer>
             {enrichedClients.length > 0 ? (
               enrichedClients.map((client) => {
-                console.log("Client Data:", client); // Debug log
                 const photos = client.photos || [];
                 const primaryPhoto =
                   photos.length > 0

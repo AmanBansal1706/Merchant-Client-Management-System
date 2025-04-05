@@ -4,6 +4,7 @@ import {
   PAGINATION,
   FETCH_FILTERED_CLIENTS,
   CLIENTS_LIST,
+  IS_INITIAL_LOAD,
   STORE_FILTER_DATA,
   IS_BTN_DISABLED,
   ADD_CLIENT,
@@ -30,49 +31,56 @@ const initialState = {
   btnDisabled: {
     btnNext: true,
     btnPrev: true,
-  }
+  },
+  isInitialLoad: true,
 };
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case "RESET_STATE":
-      return { ...initialState, token: null, clients: [], history: {} }
+      return { ...initialState, token: null, clients: [], history: {} };
 
     case LOGIN_SUCCESS:
-      return { ...state, token: action.payload }
+      return { ...state, token: action.payload };
 
     case FETCH_CLIENTS:
       return {
         ...state,
         clients: Array.isArray(action.payload) ? action.payload : [],
-      }
+      };
 
     case PAGINATION:
-      return { ...state, currentPage: action.payload }
+      return { ...state, currentPage: action.payload };
 
     case FETCH_FILTERED_CLIENTS:
       return {
         ...state,
         filteredClients: Array.isArray(action.payload) ? action.payload : [],
-      }
+      };
 
     case STORE_FILTER_DATA:
       return {
         ...state,
         filterData: action.payload,
-      }
+      };
 
     case CLIENTS_LIST:
       return {
         ...state,
         clientsList: Array.isArray(action.payload) ? action.payload : [],
-      }
+      };
+
+    case IS_INITIAL_LOAD:
+      return {
+        ...state,
+        isInitialLoad: action.payload,
+      };
 
     case IS_BTN_DISABLED:
       return {
         ...state,
         btnDisabled: action.payload,
-      }
+      };
 
     case ADD_CLIENT:
       const newClient = {
@@ -120,16 +128,16 @@ const reducer = (state = initialState, action) => {
       const updatedHistory = overwrite
         ? newHistory
         : [
-          ...(state.history[purchaseId] || []),
-          ...newHistory.filter(
-            (newEntry) =>
-              !state.history[purchaseId]?.some(
-                (existing) =>
-                  existing.id === newEntry.id &&
-                  existing.modification_date === newEntry.modification_date
-              )
-          ),
-        ];
+            ...(state.history[purchaseId] || []),
+            ...newHistory.filter(
+              (newEntry) =>
+                !state.history[purchaseId]?.some(
+                  (existing) =>
+                    existing.id === newEntry.id &&
+                    existing.modification_date === newEntry.modification_date
+                )
+            ),
+          ];
       return {
         ...state,
         history: { ...state.history, [purchaseId]: updatedHistory },
@@ -142,12 +150,12 @@ const reducer = (state = initialState, action) => {
         clients: state.clients.map((client) =>
           client.id === id
             ? {
-              ...client,
-              ...updatedClient,
-              items: Array.isArray(updatedClient.items)
-                ? updatedClient.items
-                : client.items || [],
-            }
+                ...client,
+                ...updatedClient,
+                items: Array.isArray(updatedClient.items)
+                  ? updatedClient.items
+                  : client.items || [],
+              }
             : client
         ),
       };
