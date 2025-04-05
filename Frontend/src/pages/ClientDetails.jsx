@@ -327,12 +327,12 @@ const ClientDetails = () => {
                   <HistoryCell>{entry.itemName}</HistoryCell>
                   <HistoryCell>
                     {entry.balanceBefore !== null
-                      ? `$${entry.balanceBefore} → $${entry.balanceAfter}`
+                      ? `₹${entry.balanceBefore} → ₹${entry.balanceAfter}`
                       : "Unchanged"}
                   </HistoryCell>
                   <HistoryCell>
                     {entry.priceBefore !== null
-                      ? `$${entry.priceBefore} → $${entry.priceAfter}`
+                      ? `₹${entry.priceBefore} → ₹${entry.priceAfter}`
                       : "Unchanged"}
                   </HistoryCell>
                 </HistoryRow>
@@ -385,11 +385,11 @@ const ClientDetails = () => {
         </DetailItem>
         <DetailItem>
           <Label>Total Price</Label>
-          <Value>${totalPrice || 0}</Value>
+          <Value>₹{totalPrice || 0}</Value>
         </DetailItem>
         <DetailItem>
           <Label>Total Remaining Balance</Label>
-          <Value>${totalBalance || 0}</Value>
+          <Value>₹{totalBalance || 0}</Value>
         </DetailItem>
       </DetailSection>
 
@@ -408,9 +408,9 @@ const ClientDetails = () => {
               )}
               <ItemDetails>
                 <ItemName>{item.item_name}</ItemName>
-                <ItemPrice>Price: ${item.price}</ItemPrice>
+                <ItemPrice>Price: ₹{item.price}</ItemPrice>
                 <ItemBalance>
-                  Remaining Balance: ${item.remaining_balance}
+                  Remaining Balance: ₹{item.remaining_balance}
                 </ItemBalance>
               </ItemDetails>
             </ItemCard>

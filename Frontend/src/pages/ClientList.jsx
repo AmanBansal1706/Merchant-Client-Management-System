@@ -27,6 +27,7 @@ import {
   FiLogOut,
   FiList,
 } from "react-icons/fi";
+import { FaIndianRupeeSign } from "react-icons/fa6";
 
 const PageWrapper = styled.div`
   max-width: 1600px;
@@ -979,7 +980,7 @@ const ClientList = () => {
       case "address":
         return <FiMapPin />;
       case "balance":
-        return <FiDollarSign />;
+        return <FaIndianRupeeSign />;
       case "item":
         return <FiShoppingBag />;
       default:
@@ -1094,13 +1095,13 @@ const ClientList = () => {
                 </Th>
                 <Th>
                   <Icon>
-                    <FiTag />
+                    <FaIndianRupeeSign /> {/* <FiTag /> */}
                   </Icon>
                   Total Price
                 </Th>
                 <Th>
                   <Icon>
-                    <FiDollarSign />
+                    <FaIndianRupeeSign />
                   </Icon>
                   Total Balance
                 </Th>
@@ -1151,8 +1152,8 @@ const ClientList = () => {
                       )}
                     </ItemCell>
                     <ItemsCountCell>{client.itemsCount || 0}</ItemsCountCell>
-                    <PriceCell>${client.total_price || 0}</PriceCell>
-                    <BalanceCell>${client.total_balance || 0}</BalanceCell>
+                    <PriceCell>₹{client.total_price || 0}</PriceCell>
+                    <BalanceCell>₹{client.total_balance || 0}</BalanceCell>
                     <DataCell onClick={(e) => e.stopPropagation()}>
                       <MenuWrapper>
                         <MenuButton onClick={() => toggleMenu(client.id)}>
