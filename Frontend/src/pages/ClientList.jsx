@@ -20,9 +20,7 @@ import {
   FiFilter,
   FiUser,
   FiMapPin,
-  FiDollarSign,
   FiShoppingBag,
-  FiTag,
   FiEdit,
   FiLogOut,
   FiList,
@@ -901,11 +899,6 @@ const ClientList = () => {
   const confirmDelete = useCallback(
     (clientId) => {
       dispatch(deleteClient(token, clientId))
-        .then(() => {
-          toast.success("Client deleted successfully", {
-            style: { background: "#2ecc71", color: "#fff" },
-          });
-        })
         .then(async () => {
           const updatedFilterValue =
             filterDataStore.filterType === "createdDate"
@@ -1148,7 +1141,7 @@ const ClientList = () => {
                       {firstItemImage ? (
                         <ClientImage src={firstItemImage} alt="First Item" />
                       ) : (
-                        "No Items"
+                        "No Photos"
                       )}
                     </ItemCell>
                     <ItemsCountCell>{client.itemsCount || 0}</ItemsCountCell>

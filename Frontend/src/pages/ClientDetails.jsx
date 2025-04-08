@@ -10,7 +10,7 @@ import {
   selectTotalsByClientId,
   selectHistoryByClientId,
 } from "../redux/selectors";
-import { FiArrowLeft } from "react-icons/fi";
+import { FiArrowLeft, FiArrowUp, FiArrowDown } from "react-icons/fi";
 
 const DetailsContainer = styled.div`
   max-width: 1000px;
@@ -225,6 +225,56 @@ const PageButton = styled.button`
   }
 `;
 
+const ScrollButton = styled.button`
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: var(--accent);
+  color: var(--ivory);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  z-index: 100;
+  
+  &:hover {
+    background: var(--highlight);
+    transform: translateY(-3px);
+  }
+
+  /* Tablet (768px and below) */
+  @media screen and (max-width: 768px) {
+    width: 45px;
+    height: 45px;
+    bottom: 25px;
+    right: 25px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    width: 40px;
+    height: 40px;
+    bottom: 20px;
+    right: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  }
+
+  /* Small Mobile (320px and below) */
+  @media screen and (max-width: 320px) {
+    width: 35px;
+    height: 35px;
+    bottom: 15px;
+    right: 15px;
+  }
+`;
+
 const ClientDetails = () => {
   const { id } = useParams();
   const clientId = parseInt(id);
@@ -245,6 +295,8 @@ const ClientDetails = () => {
   const [fetchedHistoryIds, setFetchedHistoryIds] = useState(new Set());
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  const [showScrollButton, setShowScrollButton] = useState(false);
+  const [isNearBottom, setIsNearBottom] = useState(false);
 
   const refreshHistory = useCallback(async () => {
     if (!client || isLoading) {
@@ -296,6 +348,34 @@ const ClientDetails = () => {
       refreshHistory();
     }
   }, [client, didFetchClients, refreshHistory]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      setIsNearBottom(scrollTop + windowHeight >= documentHeight - 100);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  const handleScroll = () => {
+    if (isNearBottom) {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    } else {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   const formatHistory = () => {
     if (!groupedHistory || Object.keys(groupedHistory).length === 0) {
@@ -448,6 +528,10 @@ const ClientDetails = () => {
           </PageButton>
         </Pagination>
       </HistorySection>
+
+      <ScrollButton onClick={handleScroll}>
+        {isNearBottom ? <FiArrowUp size={24} /> : <FiArrowDown size={24} />}
+      </ScrollButton>
     </DetailsContainer>
   );
 };

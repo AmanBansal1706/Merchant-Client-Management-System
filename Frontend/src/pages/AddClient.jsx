@@ -9,7 +9,7 @@ import {
   updateClient,
   clientsList,
 } from "../redux/actions";
-import { FiArrowLeft, FiTrash2, FiPlus } from "react-icons/fi";
+import { FiArrowLeft, FiTrash2, FiPlus, FiArrowUp, FiArrowDown } from "react-icons/fi";
 
 const AddClientContainer = styled.div`
   max-width: 900px;
@@ -20,6 +20,20 @@ const AddClientContainer = styled.div`
   box-shadow: 0 8px 24px var(--shadow);
   border: 1px solid var(--border);
   position: relative;
+
+  /* Tablet (768px and below) */
+  @media screen and (max-width: 768px) {
+    margin: 20px;
+    padding: 25px;
+    border-radius: 12px;
+  }
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    margin: 15px;
+    padding: 20px;
+    border-radius: 10px;
+  }
 `;
 
 const BackButton = styled.button`
@@ -53,6 +67,18 @@ const Form = styled.form`
   padding: 20px;
   background: var(--bg-primary);
   border-radius: 12px;
+
+  /* Tablet (768px and below) */
+  @media screen and (max-width: 768px) {
+    gap: 20px;
+    padding: 15px;
+  }
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    gap: 15px;
+    padding: 12px;
+  }
 `;
 
 const Label = styled.label`
@@ -77,6 +103,18 @@ const Input = styled.input`
   &:focus {
     border-color: var(--accent);
     box-shadow: 0 0 8px rgba(42, 157, 143, 0.2);
+  }
+
+  /* Tablet (768px and below) */
+  @media screen and (max-width: 768px) {
+    padding: 12px 15px;
+    font-size: 0.95rem;
+  }
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    padding: 10px 12px;
+    font-size: 0.9rem;
   }
 `;
 
@@ -103,6 +141,16 @@ const PhotoPreview = styled.div`
   display: flex;
   gap: 15px;
   flex-wrap: wrap;
+
+  /* Tablet (768px and below) */
+  @media screen and (max-width: 768px) {
+    gap: 12px;
+  }
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    gap: 10px;
+  }
 `;
 
 const PreviewImageWrapper = styled.div`
@@ -116,6 +164,18 @@ const PreviewImage = styled.img`
   object-fit: cover;
   border-radius: 8px;
   border: 2px solid var(--border);
+
+  /* Tablet (768px and below) */
+  @media screen and (max-width: 768px) {
+    width: 100px;
+    height: 100px;
+  }
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    width: 90px;
+    height: 90px;
+  }
 `;
 
 const DeletePhotoButton = styled.button`
@@ -145,6 +205,18 @@ const ItemSection = styled.div`
   background: var(--bg-secondary);
   display: grid;
   gap: 15px;
+
+  /* Tablet (768px and below) */
+  @media screen and (max-width: 768px) {
+    padding: 15px;
+    gap: 12px;
+  }
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    padding: 12px;
+    gap: 10px;
+  }
 `;
 
 const AddItemButton = styled.button`
@@ -169,6 +241,19 @@ const ButtonContainer = styled.div`
   display: flex;
   gap: 20px;
   margin-top: 30px;
+
+  /* Tablet (768px and below) */
+  @media screen and (max-width: 768px) {
+    gap: 15px;
+    margin-top: 25px;
+  }
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+  }
 `;
 
 const SubmitButton = styled.button`
@@ -187,6 +272,18 @@ const SubmitButton = styled.button`
   &:hover {
     background: var(--highlight);
   }
+
+  /* Tablet (768px and below) */
+  @media screen and (max-width: 768px) {
+    padding: 12px;
+    font-size: 1rem;
+  }
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    padding: 10px;
+    font-size: 0.95rem;
+  }
 `;
 
 const CancelButton = styled.button`
@@ -204,6 +301,18 @@ const CancelButton = styled.button`
   transition: background 0.3s ease;
   &:hover {
     background: #5f6e74;
+  }
+
+  /* Tablet (768px and below) */
+  @media screen and (max-width: 768px) {
+    padding: 12px;
+    font-size: 1rem;
+  }
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    padding: 10px;
+    font-size: 0.95rem;
   }
 `;
 
@@ -234,6 +343,18 @@ const ModalContent = styled.div`
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   text-align: center;
+
+  /* Tablet (768px and below) */
+  @media screen and (max-width: 768px) {
+    padding: 15px;
+    margin: 0 20px;
+  }
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    padding: 12px;
+    margin: 0 15px;
+  }
 `;
 
 const ModalMessage = styled.p`
@@ -246,6 +367,12 @@ const ModalButtons = styled.div`
   display: flex;
   gap: 20px;
   justify-content: center;
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    flex-direction: column;
+    gap: 10px;
+  }
 `;
 
 const YesButton = styled.button`
@@ -259,6 +386,12 @@ const YesButton = styled.button`
   &:hover {
     background: #27ae60;
   }
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    width: 100%;
+    padding: 12px;
+  }
 `;
 
 const NoButton = styled.button`
@@ -271,6 +404,62 @@ const NoButton = styled.button`
   font-weight: 600;
   &:hover {
     background: #c0392b;
+  }
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    width: 100%;
+    padding: 12px;
+  }
+`;
+
+const ScrollButton = styled.button`
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: var(--accent);
+  color: var(--ivory);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  z-index: 100;
+  
+  &:hover {
+    background: var(--highlight);
+    transform: translateY(-3px);
+  }
+
+  /* Tablet (768px and below) */
+  @media screen and (max-width: 768px) {
+    width: 45px;
+    height: 45px;
+    bottom: 25px;
+    right: 25px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    width: 40px;
+    height: 40px;
+    bottom: 20px;
+    right: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  }
+
+  /* Small Mobile (320px and below) */
+  @media screen and (max-width: 320px) {
+    width: 35px;
+    height: 35px;
+    bottom: 15px;
+    right: 15px;
   }
 `;
 
@@ -342,6 +531,9 @@ const AddClient = () => {
   const { token } = useSelector((state) => state);
   const displayUpdatedClient = useSelector((state) => state.clientsList);
   const itemFileInputRefs = useRef([]);
+  const [showScrollButton, setShowScrollButton] = useState(false);
+  const [isNearBottom, setIsNearBottom] = useState(false);
+  const formRef = useRef(null);
 
   const page = useSelector((state) => state.currentPage);
   const filterDataStore = useSelector((state) => state.filterData);
@@ -405,6 +597,20 @@ const AddClient = () => {
       (_, i) => itemFileInputRefs.current[i] || React.createRef()
     );
   }, [clientId, displayUpdatedClient, token, navigate]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      setIsNearBottom(scrollTop + windowHeight >= documentHeight - 100);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   const handleFileChange = async (e) => {
     const newFiles = Array.from(e.target.files);
@@ -604,7 +810,7 @@ const AddClient = () => {
             page
           )
         );
-        toast.success("Client updated successfully");
+       
         await dispatch(clientsList(updatedClient));
       } else {
         const clientData = {
@@ -625,7 +831,7 @@ const AddClient = () => {
           purchases,
         });
         await dispatch(addClient(token, { client: clientData, purchases }));
-        toast.success("Client added successfully");
+       
       }
       setModal({ show: false, type: "", data: null });
       navigate("/clients");
@@ -654,13 +860,27 @@ const AddClient = () => {
     setModal({ show: false, type: "", data: null });
   };
 
+  const handleScroll = () => {
+    if (isNearBottom) {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    } else {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   return (
     <AddClientContainer>
       <BackButton onClick={() => navigate("/clients")}>
         <FiArrowLeft />
       </BackButton>
       <Heading>{clientId ? "Edit Client Profile" : "Add New Client"}</Heading>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit} ref={formRef}>
         <div>
           <Label>Name</Label>
           <Input
@@ -834,6 +1054,10 @@ const AddClient = () => {
           </ModalContent>
         </ModalOverlay>
       )}
+
+      <ScrollButton onClick={handleScroll}>
+        {isNearBottom ? <FiArrowUp size={24} /> : <FiArrowDown size={24} />}
+      </ScrollButton>
     </AddClientContainer>
   );
 };

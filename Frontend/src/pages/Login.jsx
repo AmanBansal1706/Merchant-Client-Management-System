@@ -11,6 +11,16 @@ const LoginWrapper = styled.div`
   min-height: 100vh;
   padding: 20px;
   background: #f9f9f7;
+
+  /* Tablet (768px and below) */
+  @media screen and (max-width: 768px) {
+    padding: 15px;
+  }
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    padding: 10px;
+  }
 `;
 
 const LoginContainer = styled.div`
@@ -36,6 +46,23 @@ const LoginContainer = styled.div`
     border-radius: 14px;
     z-index: -1;
   }
+
+  /* Tablet (768px and below) */
+  @media screen and (max-width: 768px) {
+    padding: 30px;
+    border-radius: 10px;
+  }
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    padding: 25px 20px;
+    border-radius: 8px;
+  }
+
+  /* Small Mobile (320px and below) */
+  @media screen and (max-width: 320px) {
+    padding: 20px 15px;
+  }
 `;
 
 const MainHeading = styled.h1`
@@ -45,6 +72,18 @@ const MainHeading = styled.h1`
   text-align: center;
   margin-bottom: 40px;
   letter-spacing: 1px;
+
+  /* Tablet (768px and below) */
+  @media screen and (max-width: 768px) {
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+  }
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    font-size: 1.6rem;
+    margin-bottom: 25px;
+  }
 `;
 
 const FormHeading = styled.h2`
@@ -53,12 +92,34 @@ const FormHeading = styled.h2`
   color: var(--accent);
   text-align: center;
   margin-bottom: 30px;
+
+  /* Tablet (768px and below) */
+  @media screen and (max-width: 768px) {
+    font-size: 1.3rem;
+    margin-bottom: 25px;
+  }
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+  }
 `;
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 20px;
+
+  /* Tablet (768px and below) */
+  @media screen and (max-width: 768px) {
+    gap: 18px;
+  }
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    gap: 15px;
+  }
 `;
 
 const Label = styled.label`
@@ -66,6 +127,18 @@ const Label = styled.label`
   font-weight: 500;
   color: var(--text-primary);
   margin-bottom: 8px;
+
+  /* Tablet (768px and below) */
+  @media screen and (max-width: 768px) {
+    font-size: 0.95rem;
+    margin-bottom: 6px;
+  }
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+  }
 `;
 
 const Input = styled.input`
@@ -82,6 +155,18 @@ const Input = styled.input`
   &:focus {
     border-color: var(--accent);
     box-shadow: 0 0 4px rgba(42, 157, 143, 0.2);
+  }
+
+  /* Tablet (768px and below) */
+  @media screen and (max-width: 768px) {
+    padding: 11px 14px;
+    font-size: 0.95rem;
+  }
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    padding: 10px 12px;
+    font-size: 0.9rem;
   }
 `;
 
@@ -103,6 +188,18 @@ const LoginButton = styled.button`
     background: var(--highlight);
     transform: translateY(-2px);
   }
+
+  /* Tablet (768px and below) */
+  @media screen and (max-width: 768px) {
+    padding: 12px;
+    font-size: 1rem;
+  }
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    padding: 11px;
+    font-size: 0.95rem;
+  }
 `;
 
 const ErrorMessage = styled.p`
@@ -110,6 +207,18 @@ const ErrorMessage = styled.p`
   font-size: 0.9rem;
   text-align: center;
   margin-top: 10px;
+
+  /* Tablet (768px and below) */
+  @media screen and (max-width: 768px) {
+    font-size: 0.85rem;
+    margin-top: 8px;
+  }
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    font-size: 0.8rem;
+    margin-top: 6px;
+  }
 `;
 
 const Login = () => {
