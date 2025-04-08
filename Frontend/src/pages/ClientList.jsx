@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { toast } from "react-toastify";
 import {
   fetchClients,
@@ -26,6 +26,27 @@ import {
   FiList,
 } from "react-icons/fi";
 import { FaIndianRupeeSign } from "react-icons/fa6";
+
+const spin = keyframes`
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+`;
+
+const LoaderWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+`;
+
+const Loader = styled.div`
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: ${spin} 1s linear infinite;
+`;
 
 const PageWrapper = styled.div`
   max-width: 1600px;
@@ -982,7 +1003,16 @@ const ClientList = () => {
   }, []);
 
   if (!token) return null;
-  if (isLoading) return <PageWrapper>Loading clients...</PageWrapper>;
+  if (isLoading) {
+    return (
+      <PageWrapper>
+        <LoaderWrapper>
+          <Loader />
+        </LoaderWrapper>
+      </PageWrapper>
+    );
+  }
+
   if (fetchError)
     return (
       <PageWrapper>
