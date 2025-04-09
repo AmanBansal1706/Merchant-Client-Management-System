@@ -152,12 +152,12 @@ const FilterRow = styled.div`
   align-items: center;
   flex-wrap: wrap;
   position: relative;
-  
+
   @media (max-width: 768px) {
     width: 100%;
     justify-content: space-between;
   }
-  
+
   @media (max-width: 480px) {
     flex-direction: row;
     align-items: center;
@@ -337,11 +337,11 @@ const DataContainer = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
-  
+
   @media (max-width: 768px) {
     max-height: calc(100vh - 350px);
   }
-  
+
   @media (max-width: 480px) {
     max-height: calc(100vh - 350px);
     padding-bottom: 60px; /* Add extra padding to prevent content from being hidden */
@@ -357,7 +357,7 @@ const DataRow = styled.div`
   &:hover {
     background: rgba(42, 157, 143, 0.15);
   }
-  
+
   @media (max-width: 768px) {
     flex-direction: column;
     padding: 15px;
@@ -366,7 +366,7 @@ const DataRow = styled.div`
     margin-bottom: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
-  
+
   @media (max-width: 480px) {
     padding-bottom: 50px; /* Add extra padding at bottom to prevent content from being hidden */
   }
@@ -399,13 +399,13 @@ const DataCell = styled.div`
   &:nth-child(8) {
     width: 13%;
   } // Actions
-  
+
   @media (max-width: 768px) {
     width: 100% !important;
     padding: 8px 0;
     display: flex;
     align-items: center;
-    
+
     &:nth-child(8) {
       position: absolute;
       top: 15px;
@@ -413,7 +413,7 @@ const DataCell = styled.div`
       width: auto !important;
     }
   }
-  
+
   @media (max-width: 480px) {
     &:nth-child(8) {
       position: absolute;
@@ -795,7 +795,7 @@ const PaginationContainer = styled.div`
   bottom: 10px;
   left: 0;
   right: 0;
-  
+
   @media (max-width: 480px) {
     padding: 10px;
     flex-direction: row; /* Keep horizontal layout */
@@ -824,7 +824,7 @@ const PaginationButton = styled.button`
     background: var(--titanium);
     cursor: not-allowed;
   }
-  
+
   @media (max-width: 480px) {
     width: auto;
     min-width: 80px;
@@ -844,7 +844,7 @@ const PageNumber = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   @media (max-width: 480px) {
     padding: 6px 8px;
     font-size: 0.9rem;
@@ -866,21 +866,21 @@ const MobileLogoutButton = styled.button`
   width: 36px;
   align-items: center;
   justify-content: center;
-  
+
   @media (max-width: 768px) {
     display: flex;
     position: absolute;
     right: 0;
     top: 0;
   }
-  
+
   @media (max-width: 480px) {
     position: absolute;
     right: 0;
     top: 0;
     z-index: 10;
   }
-  
+
   &:hover {
     background: var(--highlight);
   }
@@ -1374,7 +1374,7 @@ const ClientList = () => {
   return (
     <PageWrapper>
       <Heading>Merchant Client Management System</Heading>
-      <MobileHeading>Client Management</MobileHeading>
+      <MobileHeading>Client Management System</MobileHeading>
       <ClientListContainer>
         <Header>
           <FilterContainer>

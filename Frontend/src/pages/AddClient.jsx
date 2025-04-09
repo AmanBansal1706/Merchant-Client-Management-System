@@ -420,6 +420,10 @@ const YesButton = styled.button`
   &:hover {
     background: #27ae60;
   }
+  &:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+  }
 
   /* Mobile (480px and below) */
   @media screen and (max-width: 480px) {
@@ -439,6 +443,10 @@ const NoButton = styled.button`
   font-weight: 600;
   &:hover {
     background: #c0392b;
+  }
+  &:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
   }
 
   /* Mobile (480px and below) */
@@ -562,6 +570,7 @@ const AddClient = () => {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [modal, setModal] = useState({ show: false, type: "", data: null });
+  const [isModalActionInProgress, setIsModalActionInProgress] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { token } = useSelector((state) => state);
@@ -680,6 +689,7 @@ const AddClient = () => {
   };
 
   const confirmDeletePhoto = (index) => {
+    setIsModalActionInProgress(true);
     const isExistingPhoto = index < existingPhotos.length;
     if (isExistingPhoto) {
       setExistingPhotos((prev) => prev.filter((_, i) => i !== index));
@@ -689,6 +699,7 @@ const AddClient = () => {
     }
     setPhotoPreviews((prev) => prev.filter((_, i) => i !== index));
     setModal({ show: false, type: "", data: null });
+    setIsModalActionInProgress(false);
   };
 
   const handleItemChange = (index, field, value) => {
@@ -712,6 +723,7 @@ const AddClient = () => {
   };
 
   const confirmDeleteItemImage = (index) => {
+    setIsModalActionInProgress(true);
     const newItems = [...items];
     newItems[index].image = null;
     newItems[index].preview = "";
@@ -721,6 +733,7 @@ const AddClient = () => {
       itemFileInputRefs.current[index].current.value = "";
     }
     setModal({ show: false, type: "", data: null });
+    setIsModalActionInProgress(false);
   };
 
   const addItem = () => {
@@ -748,6 +761,7 @@ const AddClient = () => {
   };
 
   const confirmRemoveItem = (index) => {
+    setIsModalActionInProgress(true);
     const item = items[index];
     if (item.purchaseId) {
       setItemsToDelete((prev) => [...prev, item.purchaseId]);
@@ -755,6 +769,7 @@ const AddClient = () => {
     setItems(items.filter((_, i) => i !== index));
     itemFileInputRefs.current.splice(index, 1);
     setModal({ show: false, type: "", data: null });
+    setIsModalActionInProgress(false);
   };
 
   const handleSubmit = (e) => {
@@ -809,6 +824,7 @@ const AddClient = () => {
   };
 
   const confirmUpdate = async () => {
+    setIsModalActionInProgress(true);
     setIsSubmitting(true);
     try {
       if (clientId) {
@@ -875,10 +891,12 @@ const AddClient = () => {
       toast.error(error.message || "Failed to process request");
     } finally {
       setIsSubmitting(false);
+      setIsModalActionInProgress(false);
     }
   };
 
   const revertChanges = () => {
+    setIsModalActionInProgress(true);
     if (originalData) {
       setName(originalData.name);
       setAddress(originalData.address);
@@ -889,6 +907,7 @@ const AddClient = () => {
       setItemsToDelete([]);
     }
     setModal({ show: false, type: "", data: null });
+    setIsModalActionInProgress(false);
   };
 
   const closeModal = () => {
@@ -1071,8 +1090,9 @@ const AddClient = () => {
                     confirmUpdate();
                   }
                 }}
+                disabled={isModalActionInProgress}
               >
-                Yes
+                {isModalActionInProgress ? "Processing..." : "Yes"}
               </YesButton>
               <NoButton
                 onClick={() => {
@@ -1082,6 +1102,7 @@ const AddClient = () => {
                     closeModal();
                   }
                 }}
+                disabled={isModalActionInProgress}
               >
                 No
               </NoButton>

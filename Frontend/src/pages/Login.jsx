@@ -157,6 +157,12 @@ const Input = styled.input`
     box-shadow: 0 0 4px rgba(42, 157, 143, 0.2);
   }
 
+  &:disabled {
+    background: #f5f5f5;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
   /* Tablet (768px and below) */
   @media screen and (max-width: 768px) {
     padding: 11px 14px;
@@ -187,6 +193,12 @@ const LoginButton = styled.button`
   &:hover {
     background: var(--highlight);
     transform: translateY(-2px);
+  }
+
+  &:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+    transform: none;
   }
 
   /* Tablet (768px and below) */
@@ -225,17 +237,20 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+    setIsLoggingIn(true);
     try {
       await dispatch(login(username, password));
       navigate("/clients"); // Changed from "/" to "/clients"
     } catch (err) {
       setError("Invalid username or password. Use 'admin'/'password'.");
+      setIsLoggingIn(false);
     }
   };
 
@@ -252,6 +267,7 @@ const Login = () => {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
+              disabled={isLoggingIn}
             />
           </div>
           <div>
@@ -261,9 +277,12 @@ const Login = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              disabled={isLoggingIn}
             />
           </div>
-          <LoginButton type="submit">Login</LoginButton>
+          <LoginButton type="submit" disabled={isLoggingIn}>
+            {isLoggingIn ? "Logging in..." : "Login"}
+          </LoginButton>
           {error && <ErrorMessage>{error}</ErrorMessage>}
         </Form>
       </LoginContainer>
