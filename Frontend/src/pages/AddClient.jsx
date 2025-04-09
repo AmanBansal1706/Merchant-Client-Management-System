@@ -33,6 +33,9 @@ const AddClientContainer = styled.div`
     margin: 15px;
     padding: 20px;
     border-radius: 10px;
+    padding-bottom: 60px; /* Add extra padding to prevent content from being hidden */
+    width: calc(100% - 30px);
+    box-sizing: border-box;
   }
 `;
 
@@ -78,6 +81,9 @@ const Form = styled.form`
   @media screen and (max-width: 480px) {
     gap: 15px;
     padding: 12px;
+    padding-bottom: 30px; /* Add extra padding to prevent content from being hidden */
+    width: 100%;
+    box-sizing: border-box;
   }
 `;
 
@@ -115,6 +121,8 @@ const Input = styled.input`
   @media screen and (max-width: 480px) {
     padding: 10px 12px;
     font-size: 0.9rem;
+    width: 100%;
+    box-sizing: border-box;
   }
 `;
 
@@ -134,6 +142,14 @@ const FileInput = styled.input`
   transition: border-color 0.3s ease;
   &:hover {
     border-color: var(--accent);
+  }
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 0.9rem;
   }
 `;
 
@@ -216,6 +232,8 @@ const ItemSection = styled.div`
   @media screen and (max-width: 480px) {
     padding: 12px;
     gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
   }
 `;
 
@@ -235,6 +253,14 @@ const AddItemButton = styled.button`
   &:hover {
     background: var(--highlight);
   }
+
+  /* Mobile (480px and below) */
+  @media screen and (max-width: 480px) {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 0.9rem;
+  }
 `;
 
 const ButtonContainer = styled.div`
@@ -250,9 +276,12 @@ const ButtonContainer = styled.div`
 
   /* Mobile (480px and below) */
   @media screen and (max-width: 480px) {
-    flex-direction: column;
+    flex-direction: row; /* Keep horizontal layout */
     gap: 12px;
     margin-top: 20px;
+    justify-content: space-between;
+    width: 100%;
+    box-sizing: border-box;
   }
 `;
 
@@ -283,6 +312,8 @@ const SubmitButton = styled.button`
   @media screen and (max-width: 480px) {
     padding: 10px;
     font-size: 0.95rem;
+    width: 48%;
+    box-sizing: border-box;
   }
 `;
 
@@ -313,6 +344,8 @@ const CancelButton = styled.button`
   @media screen and (max-width: 480px) {
     padding: 10px;
     font-size: 0.95rem;
+    width: 48%;
+    box-sizing: border-box;
   }
 `;
 
@@ -370,8 +403,9 @@ const ModalButtons = styled.div`
 
   /* Mobile (480px and below) */
   @media screen and (max-width: 480px) {
-    flex-direction: column;
+    flex-direction: row; /* Keep horizontal layout */
     gap: 10px;
+    justify-content: space-between;
   }
 `;
 
@@ -389,8 +423,9 @@ const YesButton = styled.button`
 
   /* Mobile (480px and below) */
   @media screen and (max-width: 480px) {
-    width: 100%;
-    padding: 12px;
+    width: auto;
+    min-width: 100px;
+    padding: 10px;
   }
 `;
 
@@ -408,8 +443,9 @@ const NoButton = styled.button`
 
   /* Mobile (480px and below) */
   @media screen and (max-width: 480px) {
-    width: 100%;
-    padding: 12px;
+    width: auto;
+    min-width: 100px;
+    padding: 10px;
   }
 `;
 
