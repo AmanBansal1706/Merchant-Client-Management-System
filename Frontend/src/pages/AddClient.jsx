@@ -531,7 +531,6 @@ const AddClient = () => {
   const { token } = useSelector((state) => state);
   const displayUpdatedClient = useSelector((state) => state.clientsList);
   const itemFileInputRefs = useRef([]);
-  const [showScrollButton, setShowScrollButton] = useState(false);
   const [isNearBottom, setIsNearBottom] = useState(false);
   const formRef = useRef(null);
 

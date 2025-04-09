@@ -4,7 +4,6 @@ import { useNavigate, Link } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import { toast } from "react-toastify";
 import {
-  fetchClients,
   deleteClient,
   fetchFilteredClients,
   pagination,
@@ -50,7 +49,8 @@ const Loader = styled.div`
 
 const PageWrapper = styled.div`
   max-width: 1600px;
-  margin: 0px 60px;
+  margin: 0 auto;
+  padding: 0 20px;
   position: fixed;
   top: 0;
   left: 0;
@@ -59,7 +59,11 @@ const PageWrapper = styled.div`
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Fix heading spacing */
+  justify-content: space-between;
+
+  @media (max-width: 768px) {
+    padding: 0 10px;
+  }
 `;
 
 const Heading = styled.h2`
@@ -69,6 +73,28 @@ const Heading = styled.h2`
   text-align: center;
   margin-bottom: 15px;
   margin-top: 10px;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const MobileHeading = styled.h2`
+  display: none;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-align: center;
+  margin-bottom: 15px;
+  margin-top: 10px;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.2rem;
+  }
 `;
 
 const ClientListContainer = styled.div`
@@ -82,7 +108,15 @@ const ClientListContainer = styled.div`
   height: 100%;
   overflow: hidden;
   position: relative;
-  padding-bottom: 60px; /* Added to give space for pagination */
+  padding-bottom: 60px;
+
+  @media (max-width: 768px) {
+    padding: 15px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 10px;
+  }
 `;
 
 const Header = styled.div`
@@ -90,18 +124,54 @@ const Header = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 `;
 
 const FilterContainer = styled.div`
   display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+
+  @media (min-width: 769px) {
+    flex-direction: row;
+    align-items: center;
+    width: auto;
+  }
+`;
+
+const FilterRow = styled.div`
+  display: flex;
   gap: 12px;
   align-items: center;
+  flex-wrap: wrap;
+  position: relative;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
 `;
 
 const FilterWrapper = styled.div`
   position: relative;
   display: flex;
   align-items: center;
+
+  @media (max-width: 480px) {
+    width: 100%;
+  }
 `;
 
 const FilterIcon = styled.div`
@@ -126,6 +196,10 @@ const FilterSelect = styled.select`
     border-color: var(--accent);
     box-shadow: 0 0 5px rgba(42, 157, 143, 0.5);
   }
+
+  @media (max-width: 480px) {
+    width: 100%;
+  }
 `;
 
 const FilterInput = styled.input`
@@ -142,6 +216,48 @@ const FilterInput = styled.input`
     border-color: var(--accent);
     box-shadow: 0 0 5px rgba(42, 157, 143, 0.5);
   }
+
+  @media (max-width: 480px) {
+    width: 100%;
+  }
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    margin-top: 10px;
+    justify-content: flex-start;
+    gap: 20px;
+  }
+
+  @media (max-width: 480px) {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+  }
+`;
+
+const ActionButtonsContainer = styled.div`
+  display: flex;
+  gap: 10px;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  @media (max-width: 480px) {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
 `;
 
 const TableWrapper = styled.div`
@@ -157,6 +273,10 @@ const Table = styled.table`
   background: var(--bg-primary);
   border-radius: 8px 8px 0 0;
   table-layout: fixed;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const Thead = styled.thead`
@@ -215,6 +335,10 @@ const DataContainer = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
+
+  @media (max-width: 768px) {
+    max-height: calc(100vh - 350px);
+  }
 `;
 
 const DataRow = styled.div`
@@ -225,6 +349,15 @@ const DataRow = styled.div`
   transition: background 0.2s ease;
   &:hover {
     background: rgba(42, 157, 143, 0.15);
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    padding: 15px;
+    position: relative;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 `;
 
@@ -255,6 +388,32 @@ const DataCell = styled.div`
   &:nth-child(8) {
     width: 13%;
   } // Actions
+
+  @media (max-width: 768px) {
+    width: 100% !important;
+    padding: 8px 0;
+    display: flex;
+    align-items: center;
+
+    &:nth-child(8) {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: auto !important;
+    }
+  }
+`;
+
+const MobileLabel = styled.span`
+  font-weight: 600;
+  width: 120px;
+  min-width: 120px;
+  color: var(--accent);
+  display: none;
+
+  @media (max-width: 768px) {
+    display: inline-block;
+  }
 `;
 
 const NameCell = styled(DataCell)`
@@ -293,6 +452,11 @@ const ClientImage = styled.img`
   border-radius: 4px;
   border: 1px solid var(--border);
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    width: 40px;
+    height: 40px;
+  }
 `;
 
 const MenuWrapper = styled.div`
@@ -323,6 +487,11 @@ const Menu = styled.div`
   display: ${({ open }) => (open ? "block" : "none")};
   z-index: 150;
   min-width: 120px;
+
+  @media (max-width: 768px) {
+    right: 0;
+    top: 100%;
+  }
 `;
 
 const MenuItem = styled.button`
@@ -341,8 +510,32 @@ const MenuItem = styled.button`
   }
 `;
 
-const AddClientLink = styled(Link)`
-  margin-left: 600px;
+const ActionButton = styled.button`
+  padding: 8px 16px;
+  background: var(--accent);
+  color: var(--ivory);
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  height: 36px;
+  width: 120px;
+  transition: background 0.2s ease;
+  &:hover {
+    background: var(--highlight);
+  }
+
+  @media (max-width: 768px) {
+    width: 200px;
+  }
+
+  @media (max-width: 480px) {
+    width: 100%;
+  }
+`;
+
+const ActionLink = styled(Link)`
   padding: 5px;
   background: var(--accent);
   color: var(--ivory);
@@ -353,12 +546,27 @@ const AddClientLink = styled(Link)`
   text-align: center;
   height: 36px;
   width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: background 0.2s ease, transform 0.2s ease;
   &:hover {
     background: var(--highlight);
     transform: translateY(-2px);
   }
+
+  @media (max-width: 768px) {
+    width: 200px;
+  }
+
+  @media (max-width: 480px) {
+    width: 100%;
+  }
 `;
+
+const GetDataButton = styled(ActionButton)``;
+
+const AddClientLink = styled(ActionLink)``;
 
 const Modal = styled.div`
   position: fixed;
@@ -379,9 +587,14 @@ const ModalContent = styled.div`
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   max-width: 600px;
-  width: 100%;
+  width: 90%;
   max-height: 80vh;
   overflow-y: auto;
+
+  @media (max-width: 480px) {
+    width: 95%;
+    padding: 15px;
+  }
 `;
 
 const ModalHeader = styled.div`
@@ -395,6 +608,10 @@ const ModalTitle = styled.h3`
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--accent);
+
+  @media (max-width: 480px) {
+    font-size: 1.2rem;
+  }
 `;
 
 const CloseButton = styled.button`
@@ -413,6 +630,7 @@ const PhotoGallery = styled.div`
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+  justify-content: center;
 `;
 
 const PhotoOption = styled.img`
@@ -424,6 +642,11 @@ const PhotoOption = styled.img`
   transition: transform 0.2s ease;
   &:hover {
     transform: scale(1.1);
+  }
+
+  @media (max-width: 480px) {
+    width: 80px;
+    height: 80px;
   }
 `;
 
@@ -443,8 +666,14 @@ const LogoutButton = styled.button`
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s ease;
+  height: 36px;
+  width: 120px;
   &:hover {
     background: var(--highlight);
+  }
+
+  @media (max-width: 768px) {
+    display: none;
   }
 `;
 
@@ -466,20 +695,34 @@ const DeleteModalContent = styled.div`
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  width: 400px;
+  width: 90%;
+  max-width: 400px;
   text-align: center;
+
+  @media (max-width: 480px) {
+    width: 95%;
+    padding: 15px;
+  }
 `;
 
 const DeleteModalMessage = styled.p`
   font-size: 1.2rem;
   color: var(--text-primary);
   margin-bottom: 20px;
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+  }
 `;
 
 const DeleteModalButtons = styled.div`
   display: flex;
   gap: 20px;
   justify-content: center;
+
+  @media (max-width: 480px) {
+    gap: 10px;
+  }
 `;
 
 const ConfirmButton = styled.button`
@@ -494,6 +737,11 @@ const ConfirmButton = styled.button`
   transition: background 0.2s ease;
   &:hover {
     background: #d32f2f;
+  }
+
+  @media (max-width: 480px) {
+    padding: 8px 16px;
+    font-size: 0.9rem;
   }
 `;
 
@@ -510,6 +758,11 @@ const CancelButton = styled.button`
   &:hover {
     background: #5f6e74;
   }
+
+  @media (max-width: 480px) {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+  }
 `;
 
 const PaginationContainer = styled.div`
@@ -521,6 +774,12 @@ const PaginationContainer = styled.div`
   bottom: 10px;
   left: 0;
   right: 0;
+
+  @media (max-width: 480px) {
+    padding: 10px;
+    flex-direction: column;
+    gap: 10px;
+  }
 `;
 
 const PaginationButton = styled.button`
@@ -543,8 +802,13 @@ const PaginationButton = styled.button`
     background: var(--titanium);
     cursor: not-allowed;
   }
+
+  @media (max-width: 480px) {
+    width: 100%;
+  }
 `;
-const PageNumber = styled.p`
+
+const PageNumber = styled.div`
   margin: 0;
   font-size: 1rem;
   color: var(--text-primary);
@@ -552,9 +816,19 @@ const PageNumber = styled.p`
   border: 2px solid var(--accent);
   border-radius: 6px;
   background: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (max-width: 480px) {
+    width: 100%;
+    text-align: center;
+  }
 `;
-const GetDataButton = styled.button`
-  padding: 8px 16px;
+
+const MobileLogoutButton = styled.button`
+  display: none;
+  padding: 8px;
   background: var(--accent);
   color: var(--ivory);
   border: none;
@@ -562,12 +836,63 @@ const GetDataButton = styled.button`
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  height: 36px;
-  width: 100px;
   transition: background 0.2s ease;
+  height: 36px;
+  width: 36px;
+  align-items: center;
+  justify-content: center;
+
+  @media (max-width: 768px) {
+    display: flex;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+
+  @media (max-width: 480px) {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+
   &:hover {
     background: var(--highlight);
   }
+`;
+
+const DesktopLogoutButton = styled(LogoutButton)`
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const MobileHeader = styled.div`
+  display: none;
+  background: linear-gradient(135deg, var(--accent), #1f8a7b);
+  color: var(--ivory);
+  padding: 10px;
+  border-radius: 8px 8px 0 0;
+  margin-bottom: 10px;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+`;
+
+const MobileHeaderRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
+
+const MobileHeaderCell = styled.div`
+  font-weight: 600;
+  font-size: 0.9rem;
 `;
 
 function showToast() {
@@ -1023,64 +1348,74 @@ const ClientList = () => {
   return (
     <PageWrapper>
       <Heading>Merchant Client Management System</Heading>
+      <MobileHeading>Client Management</MobileHeading>
       <ClientListContainer>
         <Header>
           <FilterContainer>
-            <FilterWrapper>
-              <FilterIcon>
-                {getFilterIcon(filterDataStoreLocal.filterType)}
-              </FilterIcon>
-              <FilterSelect
-                name="filterType"
-                value={filterDataStoreLocal.filterType}
-                onChange={handleFilterDataChange}
-              >
-                <option value="">Select Filter</option>
-                <option value="name">Name</option>
-                <option value="address">Address</option>
-                <option value="item">Item</option>
-                <option value="createdDate">Created Date</option>
-                <option value="updatedDate">Updated Date</option>
-              </FilterSelect>
-            </FilterWrapper>
-            {filterDataStoreLocal.filterType !== "createdDate" &&
-              filterDataStoreLocal.filterType !== "updatedDate" && (
-                <FilterInput
-                  name="filterValue"
-                  type="text"
-                  value={filterDataStoreLocal.filterValue}
+            <FilterRow>
+              <FilterWrapper>
+                <FilterIcon>
+                  {getFilterIcon(filterDataStoreLocal.filterType)}
+                </FilterIcon>
+                <FilterSelect
+                  name="filterType"
+                  value={filterDataStoreLocal.filterType}
                   onChange={handleFilterDataChange}
-                  placeholder={`Filter by ${
-                    filterDataStoreLocal.filterType || "..."
-                  }`}
-                />
+                >
+                  <option value="">Select Filter</option>
+                  <option value="name">Name</option>
+                  <option value="address">Address</option>
+                  <option value="item">Item</option>
+                  <option value="createdDate">Created Date</option>
+                  <option value="updatedDate">Updated Date</option>
+                </FilterSelect>
+              </FilterWrapper>
+              {filterDataStoreLocal.filterType !== "createdDate" &&
+                filterDataStoreLocal.filterType !== "updatedDate" && (
+                  <FilterInput
+                    name="filterValue"
+                    type="text"
+                    value={filterDataStoreLocal.filterValue}
+                    onChange={handleFilterDataChange}
+                    placeholder={`Filter by ${
+                      filterDataStoreLocal.filterType || "..."
+                    }`}
+                  />
+                )}
+              {filterDataStoreLocal.filterType === "createdDate" && (
+                <div>
+                  <input
+                    type="date"
+                    name="createdDate"
+                    value={filterDataStoreLocal.createdDate}
+                    onChange={handleFilterDataChange}
+                  />
+                </div>
               )}
-            {filterDataStoreLocal.filterType === "createdDate" && (
-              <div>
-                <input
-                  type="date"
-                  name="createdDate"
-                  value={filterDataStoreLocal.createdDate}
-                  onChange={handleFilterDataChange}
-                />
-              </div>
-            )}
-            {filterDataStoreLocal.filterType === "updatedDate" && (
-              <div>
-                <input
-                  type="date"
-                  name="updatedDate"
-                  value={filterDataStoreLocal.updatedDate}
-                  onChange={handleFilterDataChange}
-                />
-              </div>
-            )}
-            <GetDataButton onClick={handleFilter}>Get Data</GetDataButton>
+              {filterDataStoreLocal.filterType === "updatedDate" && (
+                <div>
+                  <input
+                    type="date"
+                    name="updatedDate"
+                    value={filterDataStoreLocal.updatedDate}
+                    onChange={handleFilterDataChange}
+                  />
+                </div>
+              )}
+              <MobileLogoutButton onClick={handleLogout}>
+                <FiLogOut />
+              </MobileLogoutButton>
+            </FilterRow>
+            <ButtonContainer>
+              <GetDataButton onClick={handleFilter}>Get Data</GetDataButton>
+              <AddClientLink to="/add-client">Add Client</AddClientLink>
+            </ButtonContainer>
           </FilterContainer>
-          <AddClientLink to="/add-client">Add Client</AddClientLink>
-          <LogoutButton onClick={handleLogout}>
-            <FiLogOut style={{ marginRight: "5px" }} /> Logout
-          </LogoutButton>
+          <ActionButtonsContainer>
+            <DesktopLogoutButton onClick={handleLogout}>
+              <FiLogOut style={{ marginRight: "5px" }} /> Logout
+            </DesktopLogoutButton>
+          </ActionButtonsContainer>
         </Header>
         <TableWrapper>
           <Table>
@@ -1118,7 +1453,7 @@ const ClientList = () => {
                 </Th>
                 <Th>
                   <Icon>
-                    <FaIndianRupeeSign /> {/* <FiTag /> */}
+                    <FaIndianRupeeSign />
                   </Icon>
                   Total Price
                 </Th>
@@ -1137,6 +1472,19 @@ const ClientList = () => {
               </tr>
             </Thead>
           </Table>
+          <MobileHeader>
+            <MobileHeaderRow>
+              <MobileHeaderCell>Photo</MobileHeaderCell>
+              <MobileHeaderCell>Name</MobileHeaderCell>
+              <MobileHeaderCell>Address</MobileHeaderCell>
+            </MobileHeaderRow>
+            <MobileHeaderRow>
+              <MobileHeaderCell>Items</MobileHeaderCell>
+              <MobileHeaderCell>No of Items</MobileHeaderCell>
+              <MobileHeaderCell>Total Price</MobileHeaderCell>
+              <MobileHeaderCell>Total Balance</MobileHeaderCell>
+            </MobileHeaderRow>
+          </MobileHeader>
           <DataContainer>
             {enrichedClients.length > 0 ? (
               enrichedClients.map((client) => {
@@ -1155,6 +1503,7 @@ const ClientList = () => {
                     onClick={() => navigate(`/client/${client.id}`)}
                   >
                     <DataCell onClick={(e) => e.stopPropagation()}>
+                      <MobileLabel>Photo:</MobileLabel>
                       {primaryPhoto ? (
                         <ClientImage
                           src={primaryPhoto}
@@ -1165,18 +1514,34 @@ const ClientList = () => {
                         <PhotoIcon onClick={() => openPhotoModal(client.id)} />
                       )}
                     </DataCell>
-                    <NameCell>{client.name || "N/A"}</NameCell>
-                    <AddressCell>{client.address || "N/A"}</AddressCell>
+                    <NameCell>
+                      <MobileLabel>Name:</MobileLabel>
+                      {client.name || "N/A"}
+                    </NameCell>
+                    <AddressCell>
+                      <MobileLabel>Address:</MobileLabel>
+                      {client.address || "N/A"}
+                    </AddressCell>
                     <ItemCell>
+                      <MobileLabel>Items:</MobileLabel>
                       {firstItemImage ? (
                         <ClientImage src={firstItemImage} alt="First Item" />
                       ) : (
                         "No Photos"
                       )}
                     </ItemCell>
-                    <ItemsCountCell>{client.itemsCount || 0}</ItemsCountCell>
-                    <PriceCell>₹{client.total_price || 0}</PriceCell>
-                    <BalanceCell>₹{client.total_balance || 0}</BalanceCell>
+                    <ItemsCountCell>
+                      <MobileLabel>No of Items:</MobileLabel>
+                      {client.itemsCount || 0}
+                    </ItemsCountCell>
+                    <PriceCell>
+                      <MobileLabel>Total Price:</MobileLabel>₹
+                      {client.total_price || 0}
+                    </PriceCell>
+                    <BalanceCell>
+                      <MobileLabel>Total Balance:</MobileLabel>₹
+                      {client.total_balance || 0}
+                    </BalanceCell>
                     <DataCell onClick={(e) => e.stopPropagation()}>
                       <MenuWrapper>
                         <MenuButton onClick={() => toggleMenu(client.id)}>
