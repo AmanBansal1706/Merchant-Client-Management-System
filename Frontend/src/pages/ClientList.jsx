@@ -679,10 +679,10 @@ const ErrorMessage = styled.div`
 
 const LogoutButton = styled.button`
   padding: 8px 16px;
-  background: var(--accent);
+  background: #f44336;
   color: var(--ivory);
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
@@ -690,7 +690,7 @@ const LogoutButton = styled.button`
   height: 36px;
   width: 120px;
   &:hover {
-    background: var(--highlight);
+    background: #d32f2f;
   }
 
   @media (max-width: 768px) {
@@ -854,7 +854,7 @@ const PageNumber = styled.div`
 const MobileLogoutButton = styled.button`
   display: none;
   padding: 8px;
-  background: var(--accent);
+ background: #f44336;
   color: var(--ivory);
   border: none;
   border-radius: 6px;
@@ -882,7 +882,7 @@ const MobileLogoutButton = styled.button`
   }
 
   &:hover {
-    background: var(--highlight);
+      background: #d32f2f;
   }
 `;
 

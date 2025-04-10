@@ -261,23 +261,29 @@ const Login = () => {
         <FormHeading>Login into your account</FormHeading>
         <Form onSubmit={handleLogin}>
           <div>
-            <Label>Username</Label>
+            <Label htmlFor="username">Username</Label>
             <Input
+              id="username"
+              name="username"
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
               disabled={isLoggingIn}
+              autoComplete="username"
             />
           </div>
           <div>
-            <Label>Password</Label>
+            <Label htmlFor="password">Password</Label>
             <Input
+              id="password"
+              name="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               disabled={isLoggingIn}
+              autoComplete="current-password"
             />
           </div>
           <LoginButton type="submit" disabled={isLoggingIn}>

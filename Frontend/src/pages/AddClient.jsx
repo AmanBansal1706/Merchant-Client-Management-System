@@ -527,7 +527,6 @@ const compressImage = (file) => {
       return;
     }
 
-    // Use a more efficient approach for larger files
     const img = new Image();
     const canvas = document.createElement("canvas");
     const reader = new FileReader();
@@ -535,7 +534,7 @@ const compressImage = (file) => {
     reader.onload = (e) => {
       img.src = e.target.result;
       img.onload = () => {
-        // Use a more aggressive compression for very large images
+      
         const isVeryLarge = file.size > 1024 * 1024; // > 1MB
 
         const MAX_WIDTH = isVeryLarge ? 600 : 800;
@@ -577,7 +576,6 @@ const compressImage = (file) => {
   });
 };
 
-// Memoize the modal component to prevent unnecessary re-renders
 const ConfirmationModal = React.memo(
   ({ show, type, data, onConfirm, onCancel, isModalActionInProgress }) => {
     if (!show) return null;
@@ -696,14 +694,12 @@ const AddClient = () => {
                 ],
         };
 
-        // Apply all updates at once
         setName(updates.name);
         setAddress(updates.address);
         setExistingPhotos(updates.existingPhotos);
         setPhotoPreviews(updates.photoPreviews);
         setItems(updates.items);
 
-        // Store original data for potential reversion
         setOriginalData({
           name: updates.name,
           address: updates.address,
@@ -728,7 +724,6 @@ const AddClient = () => {
     let scrollRAF = null;
 
     const handleScroll = () => {
-      // Use requestAnimationFrame to throttle scroll events
       if (!scrollRAF) {
         scrollRAF = requestAnimationFrame(() => {
           const scrollTop =
@@ -758,7 +753,6 @@ const AddClient = () => {
       return;
     }
 
-    // Process files in batches to avoid blocking the main thread
     const batchSize = 3;
     const batches = [];
     for (let i = 0; i < newFiles.length; i += batchSize) {
@@ -777,14 +771,12 @@ const AddClient = () => {
         ...batchResults.map((file) => URL.createObjectURL(file)),
       ];
 
-      // Update state after each batch to show progress
       setPhotos((prev) => [...prev, ...batchResults]);
       setPhotoPreviews((prev) => [
         ...prev,
         ...batchResults.map((file) => URL.createObjectURL(file)),
       ]);
 
-      // Small delay between batches to allow UI to update
       if (batches.length > 1) {
         await new Promise((resolve) => setTimeout(resolve, 10));
       }
@@ -794,7 +786,7 @@ const AddClient = () => {
   const handleItemImageChange = async (index, e) => {
     const file = e.target.files[0];
     if (file) {
-      // Use requestIdleCallback if available to defer non-critical work
+     
       const processImage = async () => {
         const compressedFile = await compressImage(file);
         const newItems = [...items];
@@ -806,7 +798,7 @@ const AddClient = () => {
       if (window.requestIdleCallback) {
         window.requestIdleCallback(() => processImage(), { timeout: 1000 });
       } else {
-        // Fallback for browsers that don't support requestIdleCallback
+        
         setTimeout(processImage, 0);
       }
     }
