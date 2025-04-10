@@ -9,7 +9,19 @@ import {
   updateClient,
   clientsList,
 } from "../redux/actions";
-import { FiArrowLeft, FiTrash2, FiPlus, FiArrowUp, FiArrowDown } from "react-icons/fi";
+import {
+  FiArrowLeft,
+  FiTrash2,
+  FiPlus,
+  FiArrowUp,
+  FiArrowDown,
+} from "react-icons/fi";
+import {
+  selectAuthToken,
+  selectClientsList,
+  selectCurrentPage,
+  selectFilterData,
+} from "../redux/selectors";
 
 const AddClientContainer = styled.div`
   max-width: 900px;
@@ -474,7 +486,7 @@ const ScrollButton = styled.button`
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
   z-index: 100;
-  
+
   &:hover {
     background: var(--highlight);
     transform: translateY(-3px);
@@ -509,16 +521,30 @@ const ScrollButton = styled.button`
 
 const compressImage = (file) => {
   return new Promise((resolve) => {
+    // Skip compression for small files (less than 100KB)
+    if (file.size < 100 * 1024) {
+      resolve(file);
+      return;
+    }
+
+    // Use a more efficient approach for larger files
     const img = new Image();
     const canvas = document.createElement("canvas");
     const reader = new FileReader();
+
     reader.onload = (e) => {
       img.src = e.target.result;
       img.onload = () => {
-        const MAX_WIDTH = 800;
-        const MAX_HEIGHT = 800;
+        // Use a more aggressive compression for very large images
+        const isVeryLarge = file.size > 1024 * 1024; // > 1MB
+
+        const MAX_WIDTH = isVeryLarge ? 600 : 800;
+        const MAX_HEIGHT = isVeryLarge ? 600 : 800;
+
         let width = img.width;
         let height = img.height;
+
+        // Calculate new dimensions while maintaining aspect ratio
         if (width > height) {
           if (width > MAX_WIDTH) {
             height *= MAX_WIDTH / width;
@@ -530,21 +556,64 @@ const compressImage = (file) => {
             height = MAX_HEIGHT;
           }
         }
+
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext("2d");
+
+        // Use better quality settings based on file size
+        const quality = isVeryLarge ? 0.6 : file.size > 500 * 1024 ? 0.7 : 0.85;
+
         ctx.drawImage(img, 0, 0, width, height);
         canvas.toBlob(
           (blob) =>
             resolve(new File([blob], file.name, { type: "image/jpeg" })),
           "image/jpeg",
-          0.7
+          quality
         );
       };
     };
     reader.readAsDataURL(file);
   });
 };
+
+// Memoize the modal component to prevent unnecessary re-renders
+const ConfirmationModal = React.memo(
+  ({ show, type, data, onConfirm, onCancel, isModalActionInProgress }) => {
+    if (!show) return null;
+
+    const getModalMessage = () => {
+      switch (type) {
+        case "deleteItem":
+          return "Are you sure to delete this item?";
+        case "deletePhoto":
+          return "Are you sure to delete this photo?";
+        case "deleteItemImage":
+          return "Are you sure to delete this item image?";
+        case "updateClient":
+          return "Are you sure to update this client?";
+        default:
+          return "Are you sure to add this client?";
+      }
+    };
+
+    return (
+      <ModalOverlay>
+        <ModalContent>
+          <ModalMessage>{getModalMessage()}</ModalMessage>
+          <ModalButtons>
+            <YesButton onClick={onConfirm} disabled={isModalActionInProgress}>
+              {isModalActionInProgress ? "Processing..." : "Yes"}
+            </YesButton>
+            <NoButton onClick={onCancel} disabled={isModalActionInProgress}>
+              No
+            </NoButton>
+          </ModalButtons>
+        </ModalContent>
+      </ModalOverlay>
+    );
+  }
+);
 
 const AddClient = () => {
   const { id } = useParams();
@@ -573,14 +642,15 @@ const AddClient = () => {
   const [isModalActionInProgress, setIsModalActionInProgress] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { token } = useSelector((state) => state);
-  const displayUpdatedClient = useSelector((state) => state.clientsList);
+
+  const token = useSelector(selectAuthToken);
+  const displayUpdatedClient = useSelector(selectClientsList);
+  const page = useSelector(selectCurrentPage);
+  const filterDataStore = useSelector(selectFilterData);
+
   const itemFileInputRefs = useRef([]);
   const [isNearBottom, setIsNearBottom] = useState(false);
   const formRef = useRef(null);
-
-  const page = useSelector((state) => state.currentPage);
-  const filterDataStore = useSelector((state) => state.filterData);
 
   useEffect(() => {
     if (!token) {
@@ -588,71 +658,95 @@ const AddClient = () => {
       return;
     }
     if (clientId) {
+      // Use the transformed clientsList from the selector
       const client = displayUpdatedClient.find((c) => c.id === clientId);
       if (client) {
-        setName(client.name);
-        setAddress(client.address || "");
-        const existing = client.photos || [];
-        setExistingPhotos(existing);
-        setPhotoPreviews(
-          existing.map((photo) => `data:image/jpeg;base64,${photo}`)
-        );
-        const clientItems = (client.items || []).map((item) => ({
-          name: item.item_name,
-          price: item.price.toString(),
-          remaining_balance: item.remaining_balance.toString(),
-          image: null,
-          preview:
-            item.images?.length > 0
-              ? `data:image/jpeg;base64,${item.images[0]}`
-              : "",
-          purchaseId: item.id,
-          existingImages: item.images || [],
-        }));
-        setItems(
-          clientItems.length > 0
-            ? clientItems
-            : [
-                {
-                  name: "",
-                  price: "",
-                  remaining_balance: "",
-                  image: null,
-                  preview: "",
-                  purchaseId: null,
-                  existingImages: [],
-                },
-              ]
-        );
-        setOriginalData({
-          name: client.name,
+        // Batch state updates to reduce renders
+        const updates = {
+          name: client.name || "",
           address: client.address || "",
-          photos: existing.slice(),
-          photoPreviews: existing.map(
+          existingPhotos: client.photos || [],
+          photoPreviews: (client.photos || []).map(
             (photo) => `data:image/jpeg;base64,${photo}`
           ),
-          items: JSON.parse(JSON.stringify(clientItems)),
+          items:
+            (client.items || []).length > 0
+              ? (client.items || []).map((item) => ({
+                  name: item.item_name || "",
+                  price: (item.price || 0).toString(),
+                  remaining_balance: (item.remaining_balance || 0).toString(),
+                  image: null,
+                  preview:
+                    item.images?.length > 0
+                      ? `data:image/jpeg;base64,${item.images[0]}`
+                      : "",
+                  purchaseId: item.id || null,
+                  existingImages: item.images || [],
+                }))
+              : [
+                  {
+                    name: "",
+                    price: "",
+                    remaining_balance: "",
+                    image: null,
+                    preview: "",
+                    purchaseId: null,
+                    existingImages: [],
+                  },
+                ],
+        };
+
+        // Apply all updates at once
+        setName(updates.name);
+        setAddress(updates.address);
+        setExistingPhotos(updates.existingPhotos);
+        setPhotoPreviews(updates.photoPreviews);
+        setItems(updates.items);
+
+        // Store original data for potential reversion
+        setOriginalData({
+          name: updates.name,
+          address: updates.address,
+          photos: updates.existingPhotos.slice(),
+          photoPreviews: updates.photoPreviews.slice(),
+          items: JSON.parse(JSON.stringify(updates.items)),
         });
       } else {
         setError("Client not found");
       }
     }
-    itemFileInputRefs.current = items.map(
-      (_, i) => itemFileInputRefs.current[i] || React.createRef()
-    );
+
+    // Initialize refs only once
+    if (itemFileInputRefs.current.length === 0) {
+      itemFileInputRefs.current = items.map(
+        (_, i) => itemFileInputRefs.current[i] || React.createRef()
+      );
+    }
   }, [clientId, displayUpdatedClient, token, navigate]);
 
   useEffect(() => {
+    let scrollRAF = null;
+
     const handleScroll = () => {
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
-      setIsNearBottom(scrollTop + windowHeight >= documentHeight - 100);
+      // Use requestAnimationFrame to throttle scroll events
+      if (!scrollRAF) {
+        scrollRAF = requestAnimationFrame(() => {
+          const scrollTop =
+            window.pageYOffset || document.documentElement.scrollTop;
+          const windowHeight = window.innerHeight;
+          const documentHeight = document.documentElement.scrollHeight;
+          setIsNearBottom(scrollTop + windowHeight >= documentHeight - 100);
+          scrollRAF = null;
+        });
+      }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
+      if (scrollRAF) {
+        cancelAnimationFrame(scrollRAF);
+      }
     };
   }, []);
 
@@ -663,20 +757,58 @@ const AddClient = () => {
       toast.error("Maximum 15 photos allowed.");
       return;
     }
-    const compressedFiles = await Promise.all(newFiles.map(compressImage));
-    setPhotos((prev) => [...prev, ...compressedFiles]);
-    const previews = compressedFiles.map((file) => URL.createObjectURL(file));
-    setPhotoPreviews((prev) => [...prev, ...previews]);
+
+    // Process files in batches to avoid blocking the main thread
+    const batchSize = 3;
+    const batches = [];
+    for (let i = 0; i < newFiles.length; i += batchSize) {
+      batches.push(newFiles.slice(i, i + batchSize));
+    }
+
+    let processedPhotos = [];
+    let processedPreviews = [];
+
+    for (const batch of batches) {
+      // Process each batch
+      const batchResults = await Promise.all(batch.map(compressImage));
+      processedPhotos = [...processedPhotos, ...batchResults];
+      processedPreviews = [
+        ...processedPreviews,
+        ...batchResults.map((file) => URL.createObjectURL(file)),
+      ];
+
+      // Update state after each batch to show progress
+      setPhotos((prev) => [...prev, ...batchResults]);
+      setPhotoPreviews((prev) => [
+        ...prev,
+        ...batchResults.map((file) => URL.createObjectURL(file)),
+      ]);
+
+      // Small delay between batches to allow UI to update
+      if (batches.length > 1) {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      }
+    }
   };
 
   const handleItemImageChange = async (index, e) => {
     const file = e.target.files[0];
     if (file) {
-      const compressedFile = await compressImage(file);
-      const newItems = [...items];
-      newItems[index].image = compressedFile;
-      newItems[index].preview = URL.createObjectURL(compressedFile);
-      setItems(newItems);
+      // Use requestIdleCallback if available to defer non-critical work
+      const processImage = async () => {
+        const compressedFile = await compressImage(file);
+        const newItems = [...items];
+        newItems[index].image = compressedFile;
+        newItems[index].preview = URL.createObjectURL(compressedFile);
+        setItems(newItems);
+      };
+
+      if (window.requestIdleCallback) {
+        window.requestIdleCallback(() => processImage(), { timeout: 1000 });
+      } else {
+        // Fallback for browsers that don't support requestIdleCallback
+        setTimeout(processImage, 0);
+      }
     }
   };
 
@@ -698,6 +830,8 @@ const AddClient = () => {
       setPhotos((prev) => prev.filter((_, i) => i !== newPhotoIndex));
     }
     setPhotoPreviews((prev) => prev.filter((_, i) => i !== index));
+
+    // Close modal immediately
     setModal({ show: false, type: "", data: null });
     setIsModalActionInProgress(false);
   };
@@ -706,11 +840,15 @@ const AddClient = () => {
     const newItems = [...items];
 
     if (field === "price" || field === "remaining_balance") {
+      // Ensure we're working with valid numbers
       const intValue = value === "" ? "" : parseInt(value, 10).toString();
       newItems[index][field] = intValue;
     } else {
-      newItems[index][field] = value;
+      // For text fields, ensure we're working with strings
+      newItems[index][field] = value || "";
     }
+
+    // Update state immediately
     setItems(newItems);
   };
 
@@ -732,6 +870,8 @@ const AddClient = () => {
     if (itemFileInputRefs.current[index]?.current) {
       itemFileInputRefs.current[index].current.value = "";
     }
+
+    // Close modal immediately
     setModal({ show: false, type: "", data: null });
     setIsModalActionInProgress(false);
   };
@@ -768,6 +908,8 @@ const AddClient = () => {
     }
     setItems(items.filter((_, i) => i !== index));
     itemFileInputRefs.current.splice(index, 1);
+
+    // Close modal immediately
     setModal({ show: false, type: "", data: null });
     setIsModalActionInProgress(false);
   };
@@ -776,6 +918,7 @@ const AddClient = () => {
     e.preventDefault();
     setError("");
 
+    // Validate form data
     if (!name.trim()) {
       setError("Client name is required");
       return;
@@ -789,6 +932,7 @@ const AddClient = () => {
       return;
     }
 
+    // Validate each item
     for (const item of validItems) {
       if (!item.name.trim()) {
         setError("Item name is required");
@@ -816,6 +960,7 @@ const AddClient = () => {
       }
     }
 
+    // Show modal immediately without requestAnimationFrame
     setModal({
       show: true,
       type: "updateClient",
@@ -826,6 +971,7 @@ const AddClient = () => {
   const confirmUpdate = async () => {
     setIsModalActionInProgress(true);
     setIsSubmitting(true);
+
     try {
       if (clientId) {
         const clientData = {
@@ -845,15 +991,20 @@ const AddClient = () => {
             })),
           itemsToDelete,
         };
-        console.log("[AddClient] Updating client with data:", clientData);
-        await dispatch(updateClient(token, clientId, clientData));
+
+        // Determine filter value outside of the dispatch call
         const updatedFilterValue =
           filterDataStore.filterType === "createdDate"
             ? filterDataStore.createdDate
             : filterDataStore.filterType === "updatedDate"
             ? filterDataStore.updatedDate
             : filterDataStore.filterValue;
-        const updatedClient = await dispatch(
+
+        // First update the client
+        await dispatch(updateClient(token, clientId, clientData));
+
+        // Then fetch the updated client list with the current filter settings
+        const updatedClients = await dispatch(
           fetchFilteredClients(
             token,
             filterDataStore.filterType,
@@ -861,8 +1012,53 @@ const AddClient = () => {
             page
           )
         );
-       
-        await dispatch(clientsList(updatedClient));
+
+        // Update the clients list in the Redux store
+        await dispatch(clientsList(updatedClients));
+
+        // Force a refresh of the current client data
+        const refreshedClient = updatedClients.find((c) => c.id === clientId);
+        if (refreshedClient) {
+          // Update the local state with the refreshed data
+          setName(refreshedClient.name || "");
+          setAddress(refreshedClient.address || "");
+          setExistingPhotos(refreshedClient.photos || []);
+          setPhotoPreviews(
+            (refreshedClient.photos || []).map(
+              (photo) => `data:image/jpeg;base64,${photo}`
+            )
+          );
+
+          // Update items with the refreshed data
+          const refreshedItems = (refreshedClient.items || []).map((item) => ({
+            name: item.item_name || "",
+            price: (item.price || 0).toString(),
+            remaining_balance: (item.remaining_balance || 0).toString(),
+            image: null,
+            preview:
+              item.images?.length > 0
+                ? `data:image/jpeg;base64,${item.images[0]}`
+                : "",
+            purchaseId: item.id || null,
+            existingImages: item.images || [],
+          }));
+
+          setItems(
+            refreshedItems.length > 0
+              ? refreshedItems
+              : [
+                  {
+                    name: "",
+                    price: "",
+                    remaining_balance: "",
+                    image: null,
+                    preview: "",
+                    purchaseId: null,
+                    existingImages: [],
+                  },
+                ]
+          );
+        }
       } else {
         const clientData = {
           name,
@@ -877,13 +1073,11 @@ const AddClient = () => {
             remaining_balance: parseInt(item.remaining_balance, 10), // Ensure integer
             images: item.image ? [item.image] : null,
           }));
-        console.log("[AddClient] Adding client with data:", {
-          client: clientData,
-          purchases,
-        });
+
         await dispatch(addClient(token, { client: clientData, purchases }));
-       
       }
+
+      // Close modal and navigate immediately
       setModal({ show: false, type: "", data: null });
       navigate("/clients");
     } catch (error) {
@@ -898,34 +1092,52 @@ const AddClient = () => {
   const revertChanges = () => {
     setIsModalActionInProgress(true);
     if (originalData) {
-      setName(originalData.name);
-      setAddress(originalData.address);
-      setItems(JSON.parse(JSON.stringify(originalData.items)));
-      setPhotos([]);
-      setExistingPhotos(originalData.photos.slice());
-      setPhotoPreviews(originalData.photoPreviews.slice());
-      setItemsToDelete([]);
+      // Batch state updates
+      const updates = {
+        name: originalData.name,
+        address: originalData.address,
+        items: JSON.parse(JSON.stringify(originalData.items)),
+        photos: [],
+        existingPhotos: originalData.photos.slice(),
+        photoPreviews: originalData.photoPreviews.slice(),
+        itemsToDelete: [],
+      };
+
+      // Apply all updates at once
+      setName(updates.name);
+      setAddress(updates.address);
+      setItems(updates.items);
+      setPhotos(updates.photos);
+      setExistingPhotos(updates.existingPhotos);
+      setPhotoPreviews(updates.photoPreviews);
+      setItemsToDelete(updates.itemsToDelete);
     }
+
+    // Close modal immediately
     setModal({ show: false, type: "", data: null });
     setIsModalActionInProgress(false);
   };
 
   const closeModal = () => {
+    // Close modal immediately
     setModal({ show: false, type: "", data: null });
   };
 
   const handleScroll = () => {
-    if (isNearBottom) {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
-    } else {
-      window.scrollTo({
-        top: document.documentElement.scrollHeight,
-        behavior: 'smooth'
-      });
-    }
+    // Use requestAnimationFrame for smooth scrolling
+    requestAnimationFrame(() => {
+      if (isNearBottom) {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      } else {
+        window.scrollTo({
+          top: document.documentElement.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+    });
   };
 
   return (
@@ -936,8 +1148,10 @@ const AddClient = () => {
       <Heading>{clientId ? "Edit Client Profile" : "Add New Client"}</Heading>
       <Form onSubmit={handleSubmit} ref={formRef}>
         <div>
-          <Label>Name</Label>
+          <Label htmlFor="clientName">Name</Label>
           <Input
+            id="clientName"
+            name="clientName"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
@@ -945,16 +1159,20 @@ const AddClient = () => {
           />
         </div>
         <div>
-          <Label>Address</Label>
+          <Label htmlFor="clientAddress">Address</Label>
           <Input
+            id="clientAddress"
+            name="clientAddress"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
             placeholder="Enter address (optional)"
           />
         </div>
         <FileInputWrapper>
-          <Label>Photos</Label>
+          <Label htmlFor="clientPhotos">Photos</Label>
           <FileInput
+            id="clientPhotos"
+            name="clientPhotos"
             type="file"
             multiple
             accept="image/*"
@@ -968,6 +1186,7 @@ const AddClient = () => {
                   <DeletePhotoButton
                     type="button"
                     onClick={() => handleDeletePhoto(index)}
+                    aria-label={`Delete photo ${index + 1}`}
                   >
                     <FiTrash2 size={16} />
                   </DeletePhotoButton>
@@ -979,8 +1198,10 @@ const AddClient = () => {
         {items.map((item, index) => (
           <ItemSection key={index}>
             <div>
-              <Label>Item Name</Label>
+              <Label htmlFor={`itemName-${index}`}>Item Name</Label>
               <Input
+                id={`itemName-${index}`}
+                name={`itemName-${index}`}
                 value={item.name}
                 onChange={(e) =>
                   handleItemChange(index, "name", e.target.value)
@@ -990,8 +1211,10 @@ const AddClient = () => {
               />
             </div>
             <div>
-              <Label>Price</Label>
+              <Label htmlFor={`itemPrice-${index}`}>Price</Label>
               <Input
+                id={`itemPrice-${index}`}
+                name={`itemPrice-${index}`}
                 type="text"
                 value={item.price}
                 onChange={(e) =>
@@ -1002,8 +1225,10 @@ const AddClient = () => {
               />
             </div>
             <div>
-              <Label>Remaining Balance</Label>
+              <Label htmlFor={`itemBalance-${index}`}>Remaining Balance</Label>
               <Input
+                id={`itemBalance-${index}`}
+                name={`itemBalance-${index}`}
                 type="text"
                 value={item.remaining_balance}
                 onChange={(e) =>
@@ -1014,8 +1239,10 @@ const AddClient = () => {
               />
             </div>
             <FileInputWrapper>
-              <Label>Item Image</Label>
+              <Label htmlFor={`itemImage-${index}`}>Item Image</Label>
               <FileInput
+                id={`itemImage-${index}`}
+                name={`itemImage-${index}`}
                 type="file"
                 accept="image/*"
                 ref={itemFileInputRefs.current[index]}
@@ -1031,6 +1258,7 @@ const AddClient = () => {
                     <DeletePhotoButton
                       type="button"
                       onClick={() => handleDeleteItemImage(index)}
+                      aria-label={`Delete item image ${index + 1}`}
                     >
                       <FiTrash2 size={16} />
                     </DeletePhotoButton>
@@ -1043,13 +1271,18 @@ const AddClient = () => {
                 type="button"
                 onClick={() => removeItem(index)}
                 style={{ position: "relative", marginTop: "10px" }}
+                aria-label={`Remove item ${index + 1}`}
               >
                 <FiTrash2 size={16} />
               </DeletePhotoButton>
             )}
           </ItemSection>
         ))}
-        <AddItemButton type="button" onClick={addItem}>
+        <AddItemButton
+          type="button"
+          onClick={addItem}
+          aria-label="Add new item"
+        >
           <FiPlus /> Add Item
         </AddItemButton>
         <ButtonContainer>
@@ -1064,51 +1297,30 @@ const AddClient = () => {
       </Form>
 
       {modal.show && (
-        <ModalOverlay>
-          <ModalContent>
-            <ModalMessage>
-              {modal.type === "deleteItem"
-                ? "Are you sure to delete this item?"
-                : modal.type === "deletePhoto"
-                ? "Are you sure to delete this photo?"
-                : modal.type === "deleteItemImage"
-                ? "Are you sure to delete this item image?"
-                : clientId
-                ? "Are you sure to update this client?"
-                : "Are you sure to add this client?"}
-            </ModalMessage>
-            <ModalButtons>
-              <YesButton
-                onClick={() => {
-                  if (modal.type === "deleteItem") {
-                    confirmRemoveItem(modal.data);
-                  } else if (modal.type === "deletePhoto") {
-                    confirmDeletePhoto(modal.data);
-                  } else if (modal.type === "deleteItemImage") {
-                    confirmDeleteItemImage(modal.data);
-                  } else if (modal.type === "updateClient") {
-                    confirmUpdate();
-                  }
-                }}
-                disabled={isModalActionInProgress}
-              >
-                {isModalActionInProgress ? "Processing..." : "Yes"}
-              </YesButton>
-              <NoButton
-                onClick={() => {
-                  if (modal.type === "updateClient") {
-                    revertChanges();
-                  } else {
-                    closeModal();
-                  }
-                }}
-                disabled={isModalActionInProgress}
-              >
-                No
-              </NoButton>
-            </ModalButtons>
-          </ModalContent>
-        </ModalOverlay>
+        <ConfirmationModal
+          show={modal.show}
+          type={modal.type}
+          data={modal.data}
+          onConfirm={() => {
+            if (modal.type === "deleteItem") {
+              confirmRemoveItem(modal.data);
+            } else if (modal.type === "deletePhoto") {
+              confirmDeletePhoto(modal.data);
+            } else if (modal.type === "deleteItemImage") {
+              confirmDeleteItemImage(modal.data);
+            } else if (modal.type === "updateClient") {
+              confirmUpdate();
+            }
+          }}
+          onCancel={() => {
+            if (modal.type === "updateClient") {
+              revertChanges();
+            } else {
+              closeModal();
+            }
+          }}
+          isModalActionInProgress={isModalActionInProgress}
+        />
       )}
 
       <ScrollButton onClick={handleScroll}>

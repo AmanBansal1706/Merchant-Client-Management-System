@@ -126,4 +126,79 @@ export const selectHistoryByClientId = createSelector(
   }
 );
 
-export const selectAuthToken = createSelector([getToken], (token) => token);
+export const selectAuthToken = createSelector([getToken], (token) => {
+  // Ensure token is properly formatted
+  return token ? token.trim() : null;
+});
+
+export const selectClientsList = createSelector(
+  [(state) => state.clientsList],
+  (clientsList) => {
+    if (!Array.isArray(clientsList)) return [];
+
+    // Transform each client to ensure all properties exist with proper defaults
+    return clientsList.map((client) => ({
+      ...client,
+      id: client.id || 0,
+      name: client.name || "",
+      address: client.address || "",
+      photos: Array.isArray(client.photos) ? client.photos : [],
+      items: Array.isArray(client.items)
+        ? client.items.map((item) => ({
+            ...item,
+            id: item.id || 0,
+            item_name: item.item_name || "",
+            price: typeof item.price === "number" ? item.price : 0,
+            remaining_balance:
+              typeof item.remaining_balance === "number"
+                ? item.remaining_balance
+                : 0,
+            images: Array.isArray(item.images) ? item.images : [],
+          }))
+        : [],
+    }));
+  }
+);
+
+export const selectCurrentPage = createSelector(
+  [(state) => state.currentPage],
+  (currentPage) => {
+    // Ensure page is a valid number and never negative
+    const page = typeof currentPage === "number" ? currentPage : 0;
+    return Math.max(0, page);
+  }
+);
+
+export const selectFilterData = createSelector(
+  [(state) => state.filterData],
+  (filterData) => {
+    const defaultFilterData = {
+      filterType: "",
+      filterValue: "",
+      createdDate: "",
+      updatedDate: "",
+    };
+
+    if (!filterData) return defaultFilterData;
+
+    // Ensure all properties exist with proper types
+    return {
+      filterType:
+        typeof filterData.filterType === "string"
+          ? filterData.filterType
+          : defaultFilterData.filterType,
+      filterValue:
+        typeof filterData.filterValue === "string"
+          ? filterData.filterValue
+          : defaultFilterData.filterValue,
+      createdDate:
+        typeof filterData.createdDate === "string"
+          ? filterData.createdDate
+          : defaultFilterData.createdDate,
+      updatedDate:
+        typeof filterData.updatedDate === "string"
+          ? filterData.updatedDate
+          : defaultFilterData.updatedDate,
+    };
+  }
+);

@@ -242,7 +242,7 @@ const ScrollButton = styled.button`
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
   z-index: 100;
-  
+
   &:hover {
     background: var(--highlight);
     transform: translateY(-3px);
@@ -351,15 +351,16 @@ const ClientDetails = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop;
       const windowHeight = window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
       setIsNearBottom(scrollTop + windowHeight >= documentHeight - 100);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
@@ -367,12 +368,12 @@ const ClientDetails = () => {
     if (isNearBottom) {
       window.scrollTo({
         top: 0,
-        behavior: 'smooth'
+        behavior: "smooth",
       });
     } else {
       window.scrollTo({
         top: document.documentElement.scrollHeight,
-        behavior: 'smooth'
+        behavior: "smooth",
       });
     }
   };
