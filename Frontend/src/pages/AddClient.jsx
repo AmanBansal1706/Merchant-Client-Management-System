@@ -534,7 +534,6 @@ const compressImage = (file) => {
     reader.onload = (e) => {
       img.src = e.target.result;
       img.onload = () => {
-      
         const isVeryLarge = file.size > 1024 * 1024; // > 1MB
 
         const MAX_WIDTH = isVeryLarge ? 600 : 800;
@@ -786,7 +785,6 @@ const AddClient = () => {
   const handleItemImageChange = async (index, e) => {
     const file = e.target.files[0];
     if (file) {
-     
       const processImage = async () => {
         const compressedFile = await compressImage(file);
         const newItems = [...items];
@@ -798,7 +796,6 @@ const AddClient = () => {
       if (window.requestIdleCallback) {
         window.requestIdleCallback(() => processImage(), { timeout: 1000 });
       } else {
-        
         setTimeout(processImage, 0);
       }
     }

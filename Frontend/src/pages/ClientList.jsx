@@ -39,12 +39,13 @@ const LoaderWrapper = styled.div`
 `;
 
 const Loader = styled.div`
-  border: 6px solid #f3f3f3;
-  border-top: 6px solid #3498db;
+  border: 6px solid var(--bg-tertiary);
+  border-top: 6px solid var(--accent);
   border-radius: 50%;
   width: 50px;
   height: 50px;
   animation: ${spin} 1s linear infinite;
+  box-shadow: var(--shadow-md);
 `;
 
 const PageWrapper = styled.div`
@@ -60,6 +61,7 @@ const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  background-color: var(--bg-primary);
 
   @media (max-width: 768px) {
     padding: 0 10px;
@@ -67,12 +69,27 @@ const PageWrapper = styled.div`
 `;
 
 const Heading = styled.h2`
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: 700;
   color: var(--accent);
   text-align: center;
-  margin-bottom: 15px;
+  margin-bottom: 0px;
   margin-top: 10px;
+  letter-spacing: -0.025em;
+  position: relative;
+  padding-bottom: 10px;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-light));
+    border-radius: var(--radius-full);
+  }
 
   @media (max-width: 768px) {
     display: none;
@@ -81,41 +98,63 @@ const Heading = styled.h2`
 
 const MobileHeading = styled.h2`
   display: none;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: var(--accent);
   text-align: center;
-  margin-bottom: 15px;
+  margin-bottom: 1px;
   margin-top: 10px;
+  letter-spacing: -0.025em;
+  position: relative;
+  padding-bottom: 8px;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-light));
+    border-radius: var(--radius-full);
+  }
 
   @media (max-width: 768px) {
     display: block;
+   
   }
 
   @media (max-width: 480px) {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
+   
   }
 `;
 
 const ClientListContainer = styled.div`
-  padding: 20px;
+  padding: 25px;
+  padding-top: 15px;
   background: var(--bg-secondary);
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
   border: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   height: 100%;
   overflow: hidden;
   position: relative;
-  padding-bottom: 60px;
-
+  padding-bottom: 70px;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+ 
   @media (max-width: 768px) {
-    padding: 15px;
+    padding: 20px;
+    border-radius: var(--radius-lg);
   }
 
   @media (max-width: 480px) {
-    padding: 10px;
+    padding: 15px;
+    padding-top: 5px;
+    border-radius: var(--radius-md);
   }
 `;
 
@@ -123,20 +162,21 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 15px;
 
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: flex-start;
+    gap: 0px;
   }
 `;
 
 const FilterContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 5px;
   width: 100%;
 
   @media (min-width: 769px) {
@@ -148,7 +188,7 @@ const FilterContainer = styled.div`
 
 const FilterRow = styled.div`
   display: flex;
-  gap: 12px;
+  gap: 15px;
   align-items: center;
   flex-wrap: wrap;
   position: relative;
@@ -156,6 +196,7 @@ const FilterRow = styled.div`
   @media (max-width: 768px) {
     width: 100%;
     justify-content: space-between;
+    gap: 12px;
   }
 
   @media (max-width: 480px) {
@@ -178,27 +219,42 @@ const FilterWrapper = styled.div`
 
 const FilterIcon = styled.div`
   position: absolute;
-  left: 10px;
-  color: var(--text-primary);
+  left: 12px;
+  color: var(--text-secondary);
   font-size: 1.2rem;
 `;
 
 const FilterSelect = styled.select`
-  padding: 8px 10px 8px 35px;
+  padding: 10px 12px 10px 40px;
   font-size: 0.95rem;
   color: var(--text-primary);
   background: var(--bg-primary);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   outline: none;
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  width: 150px;
+  transition: all var(--transition-normal);
+  width: 160px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  
   &:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 5px rgba(42, 157, 143, 0.5);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
   }
-
+  
+  &:hover {
+    border-color: var(--accent-light);
+  }
+  
+  @media (max-width: 768px) {
+    width: 140px;
+    padding: 8px 10px 8px 35px;
+  }
+  
   @media (max-width: 480px) {
     width: 100%;
   }
@@ -267,6 +323,7 @@ const TableWrapper = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  
 `;
 
 const Table = styled.table`
@@ -344,8 +401,7 @@ const DataContainer = styled.div`
 
   @media (max-width: 480px) {
     max-height: calc(100vh - 350px);
-    padding-bottom: 60px; /* Add extra padding to prevent content from being hidden */
-  }
+    padding-bottom: 10px; 
 `;
 
 const DataRow = styled.div`
@@ -896,29 +952,16 @@ const MobileHeader = styled.div`
   display: none;
   background: linear-gradient(135deg, var(--accent), #1f8a7b);
   color: var(--ivory);
-  padding: 10px;
+  padding: 12px;
   border-radius: 8px 8px 0 0;
   margin-bottom: 10px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.1rem;
 
   @media (max-width: 768px) {
     display: block;
   }
-`;
-
-const MobileHeaderRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 5px;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-`;
-
-const MobileHeaderCell = styled.div`
-  font-weight: 600;
-  font-size: 0.9rem;
 `;
 
 function showToast() {
@@ -1499,17 +1542,7 @@ const ClientList = () => {
             </Thead>
           </Table>
           <MobileHeader>
-            <MobileHeaderRow>
-              <MobileHeaderCell>Photo</MobileHeaderCell>
-              <MobileHeaderCell>Name</MobileHeaderCell>
-              <MobileHeaderCell>Address</MobileHeaderCell>
-            </MobileHeaderRow>
-            <MobileHeaderRow>
-              <MobileHeaderCell>Items</MobileHeaderCell>
-              <MobileHeaderCell>No of Items</MobileHeaderCell>
-              <MobileHeaderCell>Total Price</MobileHeaderCell>
-              <MobileHeaderCell>Total Balance</MobileHeaderCell>
-            </MobileHeaderRow>
+            Client Information Overview
           </MobileHeader>
           <DataContainer>
             {enrichedClients.length > 0 ? (

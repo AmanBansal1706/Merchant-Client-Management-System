@@ -10,7 +10,30 @@ const LoginWrapper = styled.div`
   align-items: center;
   min-height: 100vh;
   padding: 20px;
-  background: #f9f9f7;
+  background: linear-gradient(135deg, var(--bg-primary), #eef2ff);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, rgba(16, 185, 129, 0) 70%);
+    animation: rotate 30s linear infinite;
+    z-index: 0;
+  }
+
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
 
   /* Tablet (768px and below) */
   @media screen and (max-width: 768px) {
@@ -28,35 +51,30 @@ const LoginContainer = styled.div`
   max-width: 480px;
   padding: 40px;
   background: var(--bg-secondary);
-  border-radius: 12px;
-  box-shadow: 0 8px 24px var(--shadow), 0 20px 60px rgba(0, 0, 0, 0.1),
-    0 0 120px rgba(212, 175, 55, 0.1); /* Golden glow effect */
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
   border: 1px solid var(--border);
   position: relative;
+  z-index: 1;
   backdrop-filter: blur(10px);
+  transform: translateY(0);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
 
-  &::before {
-    content: "";
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(45deg, transparent, rgba(212, 175, 55, 0.1));
-    border-radius: 14px;
-    z-index: -1;
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.1);
   }
 
   /* Tablet (768px and below) */
   @media screen and (max-width: 768px) {
     padding: 30px;
-    border-radius: 10px;
+    border-radius: var(--radius-lg);
   }
 
   /* Mobile (480px and below) */
   @media screen and (max-width: 480px) {
     padding: 25px 20px;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
   }
 
   /* Small Mobile (320px and below) */
@@ -66,22 +84,27 @@ const LoginContainer = styled.div`
 `;
 
 const MainHeading = styled.h1`
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: 2.25rem;
+  font-weight: 800;
   color: var(--text-primary);
   text-align: center;
   margin-bottom: 40px;
-  letter-spacing: 1px;
+  letter-spacing: -0.025em;
+  background: linear-gradient(135deg, var(--accent), var(--highlight));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
 
   /* Tablet (768px and below) */
   @media screen and (max-width: 768px) {
-    font-size: 1.8rem;
+    font-size: 2rem;
     margin-bottom: 30px;
   }
 
   /* Mobile (480px and below) */
   @media screen and (max-width: 480px) {
-    font-size: 1.6rem;
+    font-size: 1.75rem;
     margin-bottom: 25px;
   }
 `;
@@ -89,9 +112,10 @@ const MainHeading = styled.h1`
 const FormHeading = styled.h2`
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--text-secondary);
   text-align: center;
   margin-bottom: 30px;
+  letter-spacing: -0.01em;
 
   /* Tablet (768px and below) */
   @media screen and (max-width: 768px) {
@@ -109,69 +133,77 @@ const FormHeading = styled.h2`
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 
   /* Tablet (768px and below) */
   @media screen and (max-width: 768px) {
-    gap: 18px;
+    gap: 20px;
   }
 
   /* Mobile (480px and below) */
   @media screen and (max-width: 480px) {
-    gap: 15px;
+    gap: 18px;
   }
 `;
 
 const Label = styled.label`
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: 0.95rem;
+  font-weight: 600;
   color: var(--text-primary);
   margin-bottom: 8px;
+  display: block;
+  letter-spacing: -0.01em;
 
   /* Tablet (768px and below) */
   @media screen and (max-width: 768px) {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     margin-bottom: 6px;
   }
 
   /* Mobile (480px and below) */
   @media screen and (max-width: 480px) {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     margin-bottom: 5px;
   }
 `;
 
 const Input = styled.input`
   width: 100%;
-  padding: 12px 16px;
+  padding: 14px 16px;
   font-size: 1rem;
   color: var(--text-primary);
   background: var(--bg-primary);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   outline: none;
-  transition: border-color 0.3s ease;
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-sm);
 
   &:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 4px rgba(42, 157, 143, 0.2);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
   }
 
   &:disabled {
-    background: #f5f5f5;
+    background: #f3f4f6;
     cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+  &::placeholder {
+    color: var(--text-secondary);
     opacity: 0.7;
   }
 
   /* Tablet (768px and below) */
   @media screen and (max-width: 768px) {
-    padding: 11px 14px;
+    padding: 12px 14px;
     font-size: 0.95rem;
   }
 
   /* Mobile (480px and below) */
   @media screen and (max-width: 480px) {
-    padding: 10px 12px;
+    padding: 11px 12px;
     font-size: 0.9rem;
   }
 `;
@@ -185,20 +217,45 @@ const LoginButton = styled.button`
   background: var(--accent);
   color: var(--ivory);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  box-shadow: 0 4px 12px var(--shadow);
-  transition: background 0.3s ease, transform 0.2s ease;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.5px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+  }
 
   &:hover {
     background: var(--highlight);
     transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3);
+  }
+
+  &:hover::before {
+    transform: translateX(100%);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 
   &:disabled {
-    background: #95a5a6;
+    background: var(--titanium);
     cursor: not-allowed;
     transform: none;
+    box-shadow: none;
   }
 
   /* Tablet (768px and below) */
@@ -215,21 +272,27 @@ const LoginButton = styled.button`
 `;
 
 const ErrorMessage = styled.p`
-  color: #e63946;
+  color: var(--error);
   font-size: 0.9rem;
   text-align: center;
   margin-top: 10px;
+  padding: 10px;
+  background-color: rgba(239, 68, 68, 0.1);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--error);
 
   /* Tablet (768px and below) */
   @media screen and (max-width: 768px) {
     font-size: 0.85rem;
     margin-top: 8px;
+    padding: 8px;
   }
 
   /* Mobile (480px and below) */
   @media screen and (max-width: 480px) {
     font-size: 0.8rem;
     margin-top: 6px;
+    padding: 6px;
   }
 `;
 
@@ -271,6 +334,7 @@ const Login = () => {
               required
               disabled={isLoggingIn}
               autoComplete="username"
+              placeholder="Enter your username"
             />
           </div>
           <div>
@@ -284,6 +348,7 @@ const Login = () => {
               required
               disabled={isLoggingIn}
               autoComplete="current-password"
+              placeholder="Enter your password"
             />
           </div>
           <LoginButton type="submit" disabled={isLoggingIn}>
